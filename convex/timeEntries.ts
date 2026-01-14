@@ -6,31 +6,45 @@ export const listTimeEntries = query({
     projectId: v.optional(v.id("projects")),
     taskId: v.optional(v.id("tasks")),
     workerId: v.optional(v.id("workers")),
-    startDate: v.optional(v.number()),
-    endDate: v.optional(v.number()),
+    startDate: v.optional(v.string()),
+    endDate: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    let timeEntriesQuery = ctx.db.query("timeEntries");
+    let entries;
 
     if (args.projectId) {
-      timeEntriesQuery = timeEntriesQuery.withIndex("by_project", (q) =>
-        q.eq("projectId", args.projectId)
-      );
+      const { projectId } = args;
+      entries = await ctx.db
+        .query("timeEntries")
+        .withIndex("by_project", (q) =>
+          q.eq("projectId", projectId)
+        )
+        .collect();
     } else if (args.taskId) {
-      timeEntriesQuery = timeEntriesQuery.withIndex("by_task", (q) =>
-        q.eq("taskId", args.taskId)
-      );
+      const { taskId } = args;
+      entries = await ctx.db
+        .query("timeEntries")
+        .withIndex("by_task", (q) =>
+          q.eq("taskId", taskId)
+        )
+        .collect();
     } else if (args.workerId) {
-      timeEntriesQuery = timeEntriesQuery.withIndex("by_worker", (q) =>
-        q.eq("workerId", args.workerId)
-      );
+      const { workerId } = args;
+      entries = await ctx.db
+        .query("timeEntries")
+        .withIndex("by_worker", (q) =>
+          q.eq("workerId", workerId)
+        )
+        .collect();
     } else {
-      timeEntriesQuery = timeEntriesQuery.withIndex("by_date");
+      entries = await ctx.db
+        .query("timeEntries")
+        .withIndex("by_date")
+        .order("desc")
+        .collect();
     }
 
-    let entries = await timeEntriesQuery.order("desc").collect();
-
-    // Filter by date range if provided
+    // Filter by date range if provided (date fields are ISO strings)
     if (args.startDate || args.endDate) {
       entries = entries.filter((entry) => {
         if (args.startDate && entry.date < args.startDate) return false;
@@ -61,16 +75,18 @@ export const createTimeEntry = mutation({
     taskId: v.optional(v.id("tasks")),
     projectId: v.id("projects"),
     workerId: v.id("workers"),
-    date: v.number(),
+    date: v.string(),
     hours: v.number(),
-    description: v.optional(v.string()),
+    notes: v.string(),
   },
   handler: async (ctx, args) => {
-    const now = Date.now();
     const entryId = await ctx.db.insert("timeEntries", {
-      ...args,
-      createdAt: now,
-      updatedAt: now,
+      taskId: args.taskId,
+      projectId: args.projectId,
+      workerId: args.workerId,
+      date: args.date,
+      hours: args.hours,
+      notes: args.notes,
     });
     return entryId;
   },
@@ -82,16 +98,13 @@ export const updateTimeEntry = mutation({
     taskId: v.optional(v.id("tasks")),
     projectId: v.optional(v.id("projects")),
     workerId: v.optional(v.id("workers")),
-    date: v.optional(v.number()),
+    date: v.optional(v.string()),
     hours: v.optional(v.number()),
-    description: v.optional(v.string()),
+    notes: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const { id, ...updates } = args;
-    await ctx.db.patch(id, {
-      ...updates,
-      updatedAt: Date.now(),
-    });
+    await ctx.db.patch(id, updates);
     return id;
   },
 });
@@ -107,15 +120,16 @@ export const deleteTimeEntry = mutation({
 export const getWeeklyTimeSummary = query({
   args: {
     workerId: v.optional(v.id("workers")),
-    startDate: v.number(),
-    endDate: v.number(),
+    startDate: v.string(),
+    endDate: v.string(),
   },
   handler: async (ctx, args) => {
-    let timeEntriesQuery = ctx.db.query("timeEntries").withIndex("by_date");
+    let entries = await ctx.db
+      .query("timeEntries")
+      .withIndex("by_date")
+      .collect();
 
-    let entries = await timeEntriesQuery.collect();
-
-    // Filter by date range
+    // Filter by date range (strings)
     entries = entries.filter(
       (entry) => entry.date >= args.startDate && entry.date <= args.endDate
     );
@@ -126,7 +140,7 @@ export const getWeeklyTimeSummary = query({
     }
 
     // Group by date
-    const groupedByDate: Record<number, number> = {};
+    const groupedByDate: Record<string, number> = {};
     entries.forEach((entry) => {
       if (!groupedByDate[entry.date]) {
         groupedByDate[entry.date] = 0;
@@ -145,7 +159,7 @@ export const getWeeklyTimeSummary = query({
       overtimeHours,
       entries: entries.length,
       dailyBreakdown: Object.entries(groupedByDate).map(([date, hours]) => ({
-        date: parseInt(date),
+        date,
         hours,
       })),
     };

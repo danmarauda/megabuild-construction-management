@@ -66,50 +66,13 @@ export const updateProject = mutation({
   },
 });
 
-export const updateProject = mutation({
-  args: {
-    id: v.id("projects"),
-    title: v.optional(v.string()),
-    customerName: v.optional(v.string()),
-    customerAddress: v.optional(v.string()),
-    customerPhone: v.optional(v.string()),
-    customerEmail: v.optional(v.string()),
-    status: v.optional(v.string()),
-    startDate: v.optional(v.string()),
-    endDate: v.optional(v.string()),
-    completionPercentage: v.optional(v.number()),
-    estimatedCost: v.optional(v.number()),
-    actualCost: v.optional(v.number()),
-    revenue: v.optional(v.number()),
-    profit: v.optional(v.number()),
-    projectManagerId: v.optional(v.id("workers")),
-    salesPersonId: v.optional(v.id("workers")),
-  },
-  handler: async (ctx, args) => {
-    const { id, ...updates } = args;
-    await ctx.db.patch(id, updates);
-    return id;
-  },
-});
-
 export const deleteProject = mutation({
   args: { id: v.id("projects") },
   handler: async (ctx, args) => {
-    // Check for related tasks
-    const tasks = await ctx.db
-      .query("tasks")
-      .filter((q) => q.eq(q.field("projectId"), args.id))
-      .collect();
-
-    // Delete related tasks
-    for (const task of tasks) {
-      await ctx.db.delete(task._id);
-    }
-
     // Check for related time entries
     const timeEntries = await ctx.db
       .query("timeEntries")
-      .filter((q) => q.eq(q.field("projectId"), args.id))
+      .withIndex("by_project", (q) => q.eq("projectId", args.id))
       .collect();
 
     for (const entry of timeEntries) {
@@ -119,7 +82,7 @@ export const deleteProject = mutation({
     // Check for related files
     const files = await ctx.db
       .query("files")
-      .filter((q) => q.eq(q.field("projectId"), args.id))
+      .withIndex("by_project", (q) => q.eq("projectId", args.id))
       .collect();
 
     for (const file of files) {
@@ -129,7 +92,7 @@ export const deleteProject = mutation({
     // Check for related invoices
     const invoices = await ctx.db
       .query("invoices")
-      .filter((q) => q.eq(q.field("projectId"), args.id))
+      .withIndex("by_project", (q) => q.eq("projectId", args.id))
       .collect();
 
     for (const invoice of invoices) {

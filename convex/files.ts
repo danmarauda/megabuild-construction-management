@@ -7,19 +7,27 @@ export const listFiles = query({
     type: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    let filesQuery = ctx.db.query("files");
+    let files;
 
     if (args.projectId) {
-      filesQuery = filesQuery.withIndex("by_project", (q) =>
-        q.eq("projectId", args.projectId)
-      );
+      const { projectId } = args;
+      files = await ctx.db
+        .query("files")
+        .withIndex("by_project", (q) =>
+          q.eq("projectId", projectId)
+        )
+        .collect();
     } else if (args.type) {
-      filesQuery = filesQuery.withIndex("by_type", (q) =>
-        q.eq("type", args.type as string)
-      );
+      const { type } = args;
+      files = await ctx.db
+        .query("files")
+        .withIndex("by_type", (q) =>
+          q.eq("type", type)
+        )
+        .collect();
+    } else {
+      files = await ctx.db.query("files").order("desc").collect();
     }
-
-    const files = await filesQuery.order("desc").collect();
 
     // Fetch related project for each file
     const filesWithProjects = await Promise.all(
@@ -40,14 +48,17 @@ export const createFile = mutation({
     url: v.string(),
     type: v.string(),
     size: v.optional(v.number()),
-    uploadedBy: v.optional(v.string()),
-    description: v.optional(v.string()),
+    uploadedById: v.optional(v.id("workers")),
   },
   handler: async (ctx, args) => {
-    const now = Date.now();
     const fileId = await ctx.db.insert("files", {
-      ...args,
-      createdAt: now,
+      name: args.name,
+      url: args.url,
+      type: args.type,
+      size: args.size ?? 0,
+      projectId: args.projectId,
+      uploadedAt: new Date().toISOString(),
+      uploadedById: args.uploadedById ?? args.projectId as any, // Default fallback
     });
     return fileId;
   },

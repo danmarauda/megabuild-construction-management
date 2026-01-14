@@ -121,7 +121,7 @@ export const seed = mutation({
         const customerId = customerIdMap.get(customer.id);
         if (customerId) {
           const existingCustomer = await ctx.db.get(customerId);
-          if (existingCustomer) {
+          if (existingCustomer && "projectIds" in existingCustomer) {
             await ctx.db.patch(customerId, {
               projectIds: [...existingCustomer.projectIds, projectIdMap.get(project.id)],
             });

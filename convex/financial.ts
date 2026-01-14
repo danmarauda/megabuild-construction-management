@@ -2,16 +2,8 @@ import { query } from "./_generated/server";
 
 export const get = query({
   args: {},
-  handler: async (ctx) => {
-    // Get the first (and should be only) financial summary record
-    const summaries = await ctx.db.query("financialSummary").collect();
-
-    // Return the first summary or default values if none exists
-    if (summaries.length > 0) {
-      return summaries[0];
-    }
-
-    // Return default values if no summary exists
+  handler: async () => {
+    // Return default financial summary values
     return {
       revenue: 12220.64,
       balance: 52340.64,

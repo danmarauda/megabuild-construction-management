@@ -39,8 +39,7 @@ export default defineSchema({
     .index("by_assignee", ["assigneeId"])
     .index("by_status", ["status"])
     .index("by_start_date", ["start"])
-    .index("by_end_date", ["end"])
-    .search("document", { searchFields: ["title", "taskNumber"] }),
+    .index("by_end_date", ["end"]),
 
   // Projects table - main construction projects
   projects: defineTable({
@@ -65,8 +64,7 @@ export default defineSchema({
     .index("by_end_date", ["endDate"])
     .index("by_project_manager", ["projectManagerId"])
     .index("by_sales_person", ["salesPersonId"])
-    .index("by_customer", ["customerName"])
-    .search("document", { searchFields: ["title", "customerName"] }),
+    .index("by_customer", ["customerName"]),
 
   // Customers table - client information
   customers: defineTable({
@@ -80,8 +78,7 @@ export default defineSchema({
   })
     .index("by_name", ["name"])
     .index("by_email", ["email"])
-    .index("by_status", ["status"])
-    .search("document", { searchFields: ["name", "email", "phone"] }),
+    .index("by_status", ["status"]),
 
   // Leads table - sales leads pipeline
   leads: defineTable({
@@ -100,8 +97,7 @@ export default defineSchema({
     .index("by_status", ["status"])
     .index("by_assignee", ["assigneeId"])
     .index("by_created_at", ["createdAt"])
-    .index("by_source", ["source"])
-    .search("document", { searchFields: ["name", "email", "source"] }),
+    .index("by_source", ["source"]),
 
   // Invoices table - billing and payments
   invoices: defineTable({
@@ -142,7 +138,7 @@ export default defineSchema({
   timeEntries: defineTable({
     workerId: v.id("workers"),
     projectId: v.id("projects"),
-    taskId: v.id("tasks"),
+    taskId: v.optional(v.id("tasks")),
     date: v.string(), // ISO date string
     hours: v.number(),
     notes: v.string(),
@@ -167,6 +163,5 @@ export default defineSchema({
     .index("by_project", ["projectId"])
     .index("by_uploaded_by", ["uploadedById"])
     .index("by_type", ["type"])
-    .index("by_uploaded_at", ["uploadedAt"])
-    .search("document", { searchFields: ["name", "type"] }),
+    .index("by_uploaded_at", ["uploadedAt"]),
 });
