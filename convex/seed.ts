@@ -3,8 +3,7 @@ import { mutation, query } from "./_generated/server";
 import { workers, projects, customers, leads, invoices, estimates, timeEntries, files } from "../src/data/mock-data";
 
 /**
- * Seed data mutation - Populates the database with initial data
- * This can be called from the Convex dashboard or via CLI
+ * Seed data mutation - Populates the database with comprehensive initial data
  *
  * Usage:
  *   npx convex run seed:seed
@@ -39,7 +38,7 @@ export const seed = mutation({
     const leadIdMap = new Map<string, any>();
     const taskIdMap = new Map<string, any>();
 
-    // 1. Insert Workers (7 workers)
+    // 1. Insert Workers
     console.log("Seeding workers...");
     for (const worker of workers) {
       const workerId = await ctx.db.insert("workers", {
@@ -54,7 +53,7 @@ export const seed = mutation({
     }
     console.log(`Inserted ${results.workers} workers`);
 
-    // 2. Insert Customers (3 customers)
+    // 2. Insert Customers
     console.log("Seeding customers...");
     for (const customer of customers) {
       const customerId = await ctx.db.insert("customers", {
@@ -71,7 +70,7 @@ export const seed = mutation({
     }
     console.log(`Inserted ${results.customers} customers`);
 
-    // 3. Insert Projects with Tasks (2 projects with 8 tasks total)
+    // 3. Insert Projects with Tasks
     console.log("Seeding projects and tasks...");
     for (const project of projects) {
       // Insert project
@@ -116,7 +115,7 @@ export const seed = mutation({
     // Update customers with project IDs
     console.log("Updating customers with project references...");
     for (const project of projects) {
-      const customer = customers.find((c) => c.id === project.customer.name.split(" ")[0]?.toLowerCase() || project.id === "1" ? "1" : "2");
+      const customer = customers.find(c => c.name === project.customer.name);
       if (customer) {
         const customerId = customerIdMap.get(customer.id);
         if (customerId) {
@@ -130,7 +129,7 @@ export const seed = mutation({
       }
     }
 
-    // 4. Insert Leads (4 leads)
+    // 4. Insert Leads (all pipeline stages)
     console.log("Seeding leads...");
     for (const lead of leads) {
       const leadId = await ctx.db.insert("leads", {
@@ -150,7 +149,7 @@ export const seed = mutation({
     }
     console.log(`Inserted ${results.leads} leads`);
 
-    // 5. Insert Invoices (4 invoices)
+    // 5. Insert Invoices (all statuses)
     console.log("Seeding invoices...");
     for (const invoice of invoices) {
       const projectId = projectIdMap.get(invoice.projectId);
@@ -172,7 +171,7 @@ export const seed = mutation({
     }
     console.log(`Inserted ${results.invoices} invoices`);
 
-    // 6. Insert Estimates (3 estimates)
+    // 6. Insert Estimates (all statuses)
     console.log("Seeding estimates...");
     for (const estimate of estimates) {
       const leadId = leadIdMap.get(estimate.leadId);
@@ -185,7 +184,9 @@ export const seed = mutation({
           createdAt: estimate.createdAt,
           validUntil: estimate.validUntil,
           sentAt: estimate.sentAt,
+          viewedAt: estimate.viewedAt,
           approvedAt: estimate.approvedAt,
+          rejectedAt: estimate.rejectedAt,
           items: estimate.items,
         });
         results.estimates++;
@@ -193,14 +194,14 @@ export const seed = mutation({
     }
     console.log(`Inserted ${results.estimates} estimates`);
 
-    // 7. Insert Time Entries (5 time entries)
+    // 7. Insert Time Entries (all workers/projects)
     console.log("Seeding time entries...");
     for (const entry of timeEntries) {
       const workerId = workerIdMap.get(entry.workerId);
       const projectId = projectIdMap.get(entry.projectId);
-      const taskId = taskIdMap.get(entry.taskId);
+      const taskId = entry.taskId ? taskIdMap.get(entry.taskId) : undefined;
 
-      if (workerId && projectId && taskId) {
+      if (workerId && projectId) {
         await ctx.db.insert("timeEntries", {
           workerId,
           projectId,
@@ -214,7 +215,7 @@ export const seed = mutation({
     }
     console.log(`Inserted ${results.timeEntries} time entries`);
 
-    // 8. Insert Files (5 files)
+    // 8. Insert Files (all types)
     console.log("Seeding files...");
     for (const file of files) {
       const projectId = projectIdMap.get(file.projectId);
@@ -246,7 +247,6 @@ export const seed = mutation({
 
 /**
  * Clear all data - Use with caution!
- * This will delete all data from the database
  *
  * Usage:
  *   npx convex run seed:clear
@@ -254,71 +254,25 @@ export const seed = mutation({
 export const clear = mutation({
   args: {},
   handler: async (ctx) => {
-    // Delete in order of dependencies (children first)
     let deleted = 0;
 
-    // Delete files
-    const files = await ctx.db.query("files").collect();
-    for (const file of files) {
-      await ctx.db.delete(file._id);
-      deleted++;
-    }
+    const deleteAll = async (tableName: string) => {
+      const items = await ctx.db.query(tableName as any).collect();
+      for (const item of items) {
+        await ctx.db.delete(item._id);
+        deleted++;
+      }
+    };
 
-    // Delete time entries
-    const timeEntries = await ctx.db.query("timeEntries").collect();
-    for (const entry of timeEntries) {
-      await ctx.db.delete(entry._id);
-      deleted++;
-    }
-
-    // Delete estimates
-    const estimates = await ctx.db.query("estimates").collect();
-    for (const estimate of estimates) {
-      await ctx.db.delete(estimate._id);
-      deleted++;
-    }
-
-    // Delete invoices
-    const invoices = await ctx.db.query("invoices").collect();
-    for (const invoice of invoices) {
-      await ctx.db.delete(invoice._id);
-      deleted++;
-    }
-
-    // Delete leads
-    const leadsData = await ctx.db.query("leads").collect();
-    for (const lead of leadsData) {
-      await ctx.db.delete(lead._id);
-      deleted++;
-    }
-
-    // Delete tasks
-    const tasks = await ctx.db.query("tasks").collect();
-    for (const task of tasks) {
-      await ctx.db.delete(task._id);
-      deleted++;
-    }
-
-    // Delete projects
-    const projects = await ctx.db.query("projects").collect();
-    for (const project of projects) {
-      await ctx.db.delete(project._id);
-      deleted++;
-    }
-
-    // Delete customers
-    const customers = await ctx.db.query("customers").collect();
-    for (const customer of customers) {
-      await ctx.db.delete(customer._id);
-      deleted++;
-    }
-
-    // Delete workers
-    const workers = await ctx.db.query("workers").collect();
-    for (const worker of workers) {
-      await ctx.db.delete(worker._id);
-      deleted++;
-    }
+    await deleteAll("files");
+    await deleteAll("timeEntries");
+    await deleteAll("estimates");
+    await deleteAll("invoices");
+    await deleteAll("leads");
+    await deleteAll("tasks");
+    await deleteAll("projects");
+    await deleteAll("customers");
+    await deleteAll("workers");
 
     return {
       status: "success",
