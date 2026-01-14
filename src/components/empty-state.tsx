@@ -38,7 +38,8 @@ export function EmptyState({
         <p className="text-gray-400 max-w-md mb-6">{description}</p>
       )}
       {actionLabel && onAction && (
-        <Button color="primary" onPress={onAction} startContent={<Icon icon="lucide:plus" />}>
+        <Button color="primary" variant="solid" onPress={onAction}>
+          <Icon icon="lucide:plus" slot="start" />
           {actionLabel}
         </Button>
       )}
