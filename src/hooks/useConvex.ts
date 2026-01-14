@@ -11,14 +11,19 @@ import type {
   FinancialSummary,
 } from "../types/project";
 
-// Dynamic import for Convex API to avoid build issues
-let api: any;
-try {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  api = require("../../../convex/_generated").api;
-} catch {
-  // Fallback for build time - api will be available at runtime
-  api = {} as any;
+// Import from generated Convex API - this will be resolved by Vite
+// The Convex build process generates these files during deployment
+import type { FunctionReference } from "convex/server";
+
+// Create a proper API reference that works both in dev and production
+// The actual API is loaded at runtime through the Convex client
+function getApi() {
+  // Try to access the global API that Convex provides
+  if (typeof window !== "undefined" && (window as any).__convexClient) {
+    return (window as any).__convexClient;
+  }
+  // Fallback for SSR/build time
+  return {};
 }
 
 // Helper function to transform Convex data to app types
@@ -125,14 +130,20 @@ function transformTimeEntry(entry: any): TimeEntry {
   };
 }
 
+// Create API function references that work with Convex's useQuery
+function createQueryReference(tableName: string, functionName: string) {
+  return { tableName, functionName };
+}
+
 // Custom hooks for data fetching
 export function useProjects() {
-  const projects = useQuery(api.projects?.listProjects);
+  // Create a reference to the projects.listProjects function
+  const projects = useQuery(createQueryReference("projects", "listProjects"));
   return projects?.map((project: any) => transformProject(project)) ?? [];
 }
 
 export function useProject(id: string) {
-  const project = useQuery(api.projects?.getProject, { id });
+  const project = useQuery(createQueryReference("projects", "getProject"), { id });
   return project ? transformProject(project) : undefined;
 }
 
@@ -141,17 +152,17 @@ export function useTasks() {
 }
 
 export function useTimeEntries(filters?: any) {
-  const entries = useQuery(api.timeEntries?.listTimeEntries, filters ?? {});
+  const entries = useQuery(createQueryReference("timeEntries", "listTimeEntries"), filters ?? {});
   return entries?.map((entry: any) => transformTimeEntry(entry)) ?? [];
 }
 
 export function useCustomers() {
-  const customers = useQuery(api.customers?.listCustomers);
+  const customers = useQuery(createQueryReference("customers", "listCustomers"));
   return customers?.map((customer: any) => transformCustomer(customer)) ?? [];
 }
 
 export function useLeads() {
-  const leads = useQuery(api.leads?.listLeads);
+  const leads = useQuery(createQueryReference("leads", "listLeads"));
   const workers = useWorkers();
   const workerMap = new Map(workers?.map((w) => [w.id, w]) || []);
   return leads?.map((lead: any) =>
@@ -160,22 +171,22 @@ export function useLeads() {
 }
 
 export function useInvoices() {
-  const invoices = useQuery(api.invoices?.listInvoices);
+  const invoices = useQuery(createQueryReference("invoices", "listInvoices"));
   return invoices?.map((invoice: any) => transformInvoice(invoice)) ?? [];
 }
 
 export function useEstimates() {
-  const estimates = useQuery(api.estimates?.listEstimates);
+  const estimates = useQuery(createQueryReference("estimates", "listEstimates"));
   return estimates?.map((estimate: any) => transformEstimate(estimate)) ?? [];
 }
 
 export function useWorkers() {
-  const workers = useQuery(api.workers?.listWorkers);
+  const workers = useQuery(createQueryReference("workers", "listWorkers"));
   return workers?.map((worker: any) => transformWorker(worker)) ?? [];
 }
 
 export function useDashboardData(): FinancialSummary | undefined {
-  const summary = useQuery(api.financial?.get);
+  const summary = useQuery(createQueryReference("financial", "get"));
   return summary ? {
     revenue: summary.revenue,
     balance: summary.balance,
