@@ -14,6 +14,18 @@ export default function Dashboard() {
   const projects = useProjects();
   const financialSummary = useFinancialSummary();
 
+  // Default values if financialSummary is undefined
+  const summary = financialSummary || {
+    revenue: 0,
+    balance: 0,
+    feesEarned: 0,
+    chargebackRate: 0,
+    totalTransactions: 0,
+    plannedPayouts: 0,
+    successfulPayments: 0,
+    failedPayments: 0,
+  };
+
   // Sample data for charts - in production this would come from Convex
   const topMerchants = [
     { id: '1', name: 'Masum Parvej', email: 'hello@masum.design', amount: 430871 },
@@ -50,20 +62,6 @@ export default function Dashboard() {
     { day: 'Fri 01', value: 12000 }
   ];
 
-  // Show loading state if data is not yet loaded
-  if (!projects || !financialSummary) {
-    return (
-      <div className="flex-1 overflow-auto">
-        <Header title="Dashboard" />
-        <div className="p-6">
-          <div className="flex items-center justify-center h-64">
-            <p className="text-muted-foreground">Loading...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="flex-1 overflow-auto">
       <Header title="Dashboard" />
@@ -72,7 +70,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
           <FinancialCard
             title="Revenue growth"
-            value={`€${financialSummary.revenue.toLocaleString()}`}
+            value={`€${summary.revenue.toLocaleString()}`}
             change="+22.2%"
             isPositive={true}
             period="Last 30 days"
@@ -80,21 +78,21 @@ export default function Dashboard() {
           />
           <FinancialCard
             title="Rolling balance"
-            value={`€${financialSummary.balance.toLocaleString()}`}
+            value={`€${summary.balance.toLocaleString()}`}
             change="+22.2%"
             isPositive={true}
             period="Last 30 days"
           />
           <FinancialCard
             title="Fees earned"
-            value={`€${financialSummary.feesEarned.toLocaleString()}`}
+            value={`€${summary.feesEarned.toLocaleString()}`}
             change="-12.2%"
             isPositive={false}
             period="Last 30 days"
           />
           <FinancialCard
             title="Chargeback rate"
-            value={`€${financialSummary.chargebackRate.toLocaleString()}`}
+            value={`€${summary.chargebackRate.toLocaleString()}`}
             change="+22.2%"
             isPositive={true}
             period="Last 30 days"
@@ -104,14 +102,14 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           <ChartCard
             title="Total transactions"
-            value={`€${financialSummary.totalTransactions.toLocaleString()}`}
+            value={`€${summary.totalTransactions.toLocaleString()}`}
             period="Last 7 days"
             data={transactionData}
             color="#7828C8"
           />
           <ChartCard
             title="Revenue growth"
-            value={`€${financialSummary.revenue.toLocaleString()}`}
+            value={`€${summary.revenue.toLocaleString()}`}
             period="Last 7 days"
             data={revenueData}
           />
@@ -120,10 +118,10 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
           <PaymentStatusCard
             title="Planned payouts"
-            value={`€${financialSummary.plannedPayouts.toLocaleString()}`}
+            value={`€${summary.plannedPayouts.toLocaleString()}`}
             subtitle="Total future payout planned"
-            successfulAmount={`€${financialSummary.successfulPayments.toLocaleString()}`}
-            failedAmount={`€${financialSummary.failedPayments.toLocaleString()}`}
+            successfulAmount={`€${summary.successfulPayments.toLocaleString()}`}
+            failedAmount={`€${summary.failedPayments.toLocaleString()}`}
             successPercentage={80}
           />
           <MerchantList

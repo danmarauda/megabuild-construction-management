@@ -1,17 +1,17 @@
 import React from "react";
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Avatar, Button } from "@heroui/react";
 import { Icon } from "@iconify/react";
-import { Task } from "../types/project";
+import { TimeEntry } from "../types/project";
 import { useWorkers, useProjects } from "../hooks/useConvex";
 import { format } from "date-fns";
 
 interface TimeEntryListProps {
-  timeEntries: Task[];
+  timeEntries: TimeEntry[];
 }
 
 export function TimeEntryList({ timeEntries }: TimeEntryListProps) {
-  const { data: workers } = useWorkers();
-  const { data: projects } = useProjects();
+  const workers = useWorkers();
+  const projects = useProjects();
 
   const getWorker = (workerId: string) => {
     return workers?.find(w => w.id === workerId) || workers?.[0];
@@ -41,45 +41,50 @@ export function TimeEntryList({ timeEntries }: TimeEntryListProps) {
         <TableColumn>ACTIONS</TableColumn>
       </TableHeader>
       <TableBody>
-        {timeEntries.map((entry) => (
-          <TableRow key={entry.id} className="border-b border-gray-800">
-            <TableCell>
-              <div className="flex items-center gap-2">
-                <Avatar 
-                  src={getWorker(entry.workerId).avatar} 
-                  name={getWorker(entry.workerId).name}
-                  size="sm"
-                />
-                <div>
-                  <div className="text-sm font-medium text-gray-300">{getWorker(entry.workerId).name}</div>
-                  <div className="text-xs text-gray-400">{getWorker(entry.workerId).role}</div>
+        {timeEntries.map((entry) => {
+          const worker = getWorker(entry.workerId);
+          if (!worker) return null;
+
+          return (
+            <TableRow key={entry.id} className="border-b border-gray-800">
+              <TableCell>
+                <div className="flex items-center gap-2">
+                  <Avatar
+                    src={worker.avatar}
+                    name={worker.name}
+                    size="sm"
+                  />
+                  <div>
+                    <div className="text-sm font-medium text-gray-300">{worker.name}</div>
+                    <div className="text-xs text-gray-400">{worker.role}</div>
+                  </div>
                 </div>
-              </div>
-            </TableCell>
-            <TableCell>
-              <div className="text-gray-300">{getProject(entry.projectId)}</div>
-            </TableCell>
-            <TableCell>
-              <div className="text-gray-300">{format(new Date(entry.date), "MMM dd, yyyy")}</div>
-            </TableCell>
-            <TableCell>
-              <div className="text-gray-300">{entry.hours}</div>
-            </TableCell>
-            <TableCell>
-              <div className="text-gray-300">{entry.notes}</div>
-            </TableCell>
-            <TableCell>
-              <div className="flex items-center gap-2">
-                <Button isIconOnly variant="light" size="sm">
-                  <Icon icon="lucide:edit" className="text-gray-400" />
-                </Button>
-                <Button isIconOnly variant="light" size="sm">
-                  <Icon icon="lucide:trash-2" className="text-gray-400" />
-                </Button>
-              </div>
-            </TableCell>
-          </TableRow>
-        ))}
+              </TableCell>
+              <TableCell>
+                <div className="text-gray-300">{getProject(entry.projectId)}</div>
+              </TableCell>
+              <TableCell>
+                <div className="text-gray-300">{format(new Date(entry.date), "MMM dd, yyyy")}</div>
+              </TableCell>
+              <TableCell>
+                <div className="text-gray-300">{entry.hours}</div>
+              </TableCell>
+              <TableCell>
+                <div className="text-gray-300">{entry.notes}</div>
+              </TableCell>
+              <TableCell>
+                <div className="flex items-center gap-2">
+                  <Button isIconOnly variant="light" size="sm">
+                    <Icon icon="lucide:edit" className="text-gray-400" />
+                  </Button>
+                  <Button isIconOnly variant="light" size="sm">
+                    <Icon icon="lucide:trash-2" className="text-gray-400" />
+                  </Button>
+                </div>
+              </TableCell>
+            </TableRow>
+          );
+        })}
       </TableBody>
     </Table>
   );
