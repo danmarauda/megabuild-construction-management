@@ -141,7 +141,7 @@ export default function Map() {
                       variant="flat"
                       className="bg-gray-900/80 backdrop-blur-sm"
                     >
-                      <Icon icon="lucide:layers" className="mr-2" />
+                      <Icon icon="lucide:layers" slot="start" />
                       Layers
                     </Button>
                     <div className="flex gap-2">
@@ -230,7 +230,7 @@ export default function Map() {
 
                       <div className="flex justify-end">
                         <Button color="primary">
-                          <Icon icon="lucide:clipboard" className="mr-2" />
+                          <Icon icon="lucide:clipboard" slot="start" />
                           View Project
                         </Button>
                       </div>

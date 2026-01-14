@@ -71,7 +71,7 @@ export default function Faq() {
           <h3 className="text-xl font-semibold text-white mb-4">Still have questions?</h3>
           <p className="text-gray-400 mb-6">Can't find the answer you're looking for? Please contact our support team.</p>
           <Button color="primary" size="lg">
-            <Icon icon="lucide:message-circle" className="mr-2" />
+            <Icon icon="lucide:message-circle" slot="start" />
             Contact Support
           </Button>
         </div>

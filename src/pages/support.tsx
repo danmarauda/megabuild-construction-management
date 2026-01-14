@@ -80,14 +80,14 @@ export default function Support() {
                   <div>
                     <div className="block mb-2 text-sm font-medium text-white">Attachments</div>
                     <Button variant="flat">
-                      <Icon icon="lucide:upload" className="mr-2" />
+                      <Icon icon="lucide:upload" slot="start" />
                       Upload Files
                     </Button>
                   </div>
-                  
+
                   <div className="flex justify-end">
                     <Button color="primary">
-                      <Icon icon="lucide:send" className="mr-2" />
+                      <Icon icon="lucide:send" slot="start" />
                       Submit Ticket
                     </Button>
                   </div>
@@ -160,7 +160,7 @@ export default function Support() {
               You don't have any active support tickets. Create a new ticket to get help from our support team.
             </div>
             <Button color="primary" className="mt-6">
-              <Icon icon="lucide:plus" className="mr-2" />
+              <Icon icon="lucide:plus" slot="start" />
               Create New Ticket
             </Button>
           </div>

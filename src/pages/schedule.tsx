@@ -108,7 +108,7 @@ export default function Schedule() {
             </Tabs>
 
             <Button color="primary">
-              <Icon icon="lucide:plus" className="mr-2" />
+              <Icon icon="lucide:plus" slot="start" />
               New Event
             </Button>
           </div>

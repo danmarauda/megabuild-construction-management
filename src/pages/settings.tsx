@@ -38,7 +38,7 @@ export default function Settings() {
                         className="w-32 h-32 mx-auto"
                       />
                       <Button variant="flat" size="sm" className="mt-4">
-                        <Icon icon="lucide:upload" className="mr-2" />
+                        <Icon icon="lucide:upload" slot="start" />
                         Change Photo
                       </Button>
                     </div>
