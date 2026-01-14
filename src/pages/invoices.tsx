@@ -124,20 +124,23 @@ export default function Invoices() {
             <Dropdown>
               <DropdownTrigger>
                 <Button variant="flat">
-                  <Icon icon="lucide:arrow-up-down" className="mr-2" />
+                  <Icon icon="lucide:arrow-up-down" slot="start" />
                   Sort: {sortBy === "newest" ? "Newest First" : sortBy === "oldest" ? "Oldest First" : sortBy === "amount-high" ? "Highest Amount" : "Lowest Amount"}
                 </Button>
               </DropdownTrigger>
-              <DropdownMenu aria-label="Sort options">
-                <DropdownItem key="newest" onPress={() => setSortBy("newest")}>Newest First</DropdownItem>
-                <DropdownItem key="oldest" onPress={() => setSortBy("oldest")}>Oldest First</DropdownItem>
-                <DropdownItem key="amount-high" onPress={() => setSortBy("amount-high")}>Highest Amount</DropdownItem>
-                <DropdownItem key="amount-low" onPress={() => setSortBy("amount-low")}>Lowest Amount</DropdownItem>
+              <DropdownMenu
+                aria-label="Sort options"
+                onAction={(key) => setSortBy(key as "newest" | "oldest" | "amount-high" | "amount-low")}
+              >
+                <DropdownItem key="newest">Newest First</DropdownItem>
+                <DropdownItem key="oldest">Oldest First</DropdownItem>
+                <DropdownItem key="amount-high">Highest Amount</DropdownItem>
+                <DropdownItem key="amount-low">Lowest Amount</DropdownItem>
               </DropdownMenu>
             </Dropdown>
 
             <Button color="primary">
-              <Icon icon="lucide:plus" className="mr-2" />
+              <Icon icon="lucide:plus" slot="start" />
               New Invoice
             </Button>
           </div>

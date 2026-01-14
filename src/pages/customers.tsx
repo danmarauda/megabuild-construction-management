@@ -93,7 +93,7 @@ export default function Customers() {
             </div>
 
             <Button color="primary">
-              <Icon icon="lucide:plus" className="mr-2" />
+              <Icon icon="lucide:plus" slot="start" />
               Add Customer
             </Button>
           </div>

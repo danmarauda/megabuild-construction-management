@@ -74,11 +74,19 @@ export default function Tasks() {
             <Dropdown>
               <DropdownTrigger>
                 <Button variant="flat">
-                  <Icon icon="lucide:filter" className="mr-2" />
+                  <Icon icon="lucide:filter" slot="start" />
                   Filter
                 </Button>
               </DropdownTrigger>
-              <DropdownMenu aria-label="Filter options">
+              <DropdownMenu
+                aria-label="Filter options"
+                onAction={(key) => {
+                  if (key === "all") setSelected("all");
+                  else if (key === "priority") setSelected("pending");
+                  else if (key === "assignee") setSelected("in-progress");
+                  else if (key === "project") setSelected("completed");
+                }}
+              >
                 <DropdownItem key="all">All Tasks</DropdownItem>
                 <DropdownItem key="priority">By Priority</DropdownItem>
                 <DropdownItem key="assignee">By Assignee</DropdownItem>
@@ -87,7 +95,7 @@ export default function Tasks() {
             </Dropdown>
 
             <Button color="primary">
-              <Icon icon="lucide:plus" className="mr-2" />
+              <Icon icon="lucide:plus" slot="start" />
               Add Task
             </Button>
           </div>

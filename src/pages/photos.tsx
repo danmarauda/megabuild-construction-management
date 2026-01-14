@@ -68,29 +68,20 @@ export default function Photos() {
             <Dropdown>
               <DropdownTrigger>
                 <Button variant="flat">
-                  <Icon icon="lucide:filter" className="mr-2" />
+                  <Icon icon="lucide:filter" slot="start" />
                   {selectedProject
-                    ? `Project: ${projects?.find((p) => p.id === selectedProject)?.title || "Selected"}`
+                    ? `Project: ${projects && projects.length > 0 ? projects.find((p) => p.id === selectedProject)?.title || "Selected" : "Selected"}`
                     : "All Projects"}
                 </Button>
               </DropdownTrigger>
-              <DropdownMenu aria-label="Project filter">
-                <DropdownItem
-                  key="all"
-                  onPress={() => setSelectedProject(null)}
-                >
-                  All Projects
-                </DropdownItem>
-                <React.Fragment>
-                  {projects?.map((project) => (
-                    <DropdownItem
-                      key={project.id}
-                      onPress={() => setSelectedProject(project.id)}
-                    >
-                      {project.title}
-                    </DropdownItem>
-                  ))}
-                </React.Fragment>
+              <DropdownMenu
+                aria-label="Project filter"
+                onAction={(key) => setSelectedProject(key === "all" ? null : key as string)}
+              >
+                <DropdownItem key="all">All Projects</DropdownItem>
+                {projects?.map((project) => (
+                  <DropdownItem key={project.id}>{project.title}</DropdownItem>
+                ))}
               </DropdownMenu>
             </Dropdown>
 
@@ -114,7 +105,7 @@ export default function Photos() {
             </div>
 
             <Button color="primary">
-              <Icon icon="lucide:upload" className="mr-2" />
+              <Icon icon="lucide:upload" slot="start" />
               Upload Files
             </Button>
           </div>

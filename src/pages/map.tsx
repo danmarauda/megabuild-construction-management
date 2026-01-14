@@ -77,7 +77,7 @@ export default function Map() {
             <Dropdown>
               <DropdownTrigger>
                 <Button variant="flat">
-                  <Icon icon="lucide:filter" className="mr-2" />
+                  <Icon icon="lucide:filter" slot="start" />
                   {selectedProject
                     ? `Project: ${projects?.find((p) => p.id === selectedProject)?.title || "Selected"}`
                     : "All Projects"}
@@ -86,20 +86,18 @@ export default function Map() {
               <DropdownMenu aria-label="Project filter">
                 <DropdownItem
                   key="all"
-                  onPress={() => setSelectedProject(null)}
+                  onAction={() => setSelectedProject(null)}
                 >
                   All Projects
                 </DropdownItem>
-                <React.Fragment>
-                  {projects?.map((project) => (
-                    <DropdownItem
-                      key={project.id}
-                      onPress={() => setSelectedProject(project.id)}
-                    >
-                      {project.title}
-                    </DropdownItem>
-                  ))}
-                </React.Fragment>
+                {projects?.map((project) => (
+                  <DropdownItem
+                    key={project.id}
+                    onAction={() => setSelectedProject(project.id)}
+                  >
+                    {project.title}
+                  </DropdownItem>
+                ))}
               </DropdownMenu>
             </Dropdown>
           </div>

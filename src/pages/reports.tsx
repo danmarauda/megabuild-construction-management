@@ -69,21 +69,33 @@ export default function Reports() {
             <Dropdown>
               <DropdownTrigger>
                 <Button variant="flat">
-                  <Icon icon="lucide:calendar" className="mr-2" />
+                  <Icon icon="lucide:calendar" slot="start" />
                   {dateRange}
                 </Button>
               </DropdownTrigger>
-              <DropdownMenu aria-label="Date range">
-                <DropdownItem key="today" onPress={() => setDateRange("Today")}>Today</DropdownItem>
-                <DropdownItem key="yesterday" onPress={() => setDateRange("Yesterday")}>Yesterday</DropdownItem>
-                <DropdownItem key="7days" onPress={() => setDateRange("Last 7 days")}>Last 7 days</DropdownItem>
-                <DropdownItem key="30days" onPress={() => setDateRange("Last 30 days")}>Last 30 days</DropdownItem>
-                <DropdownItem key="90days" onPress={() => setDateRange("Last 90 days")}>Last 90 days</DropdownItem>
+              <DropdownMenu
+                aria-label="Date range"
+                onAction={(key) => {
+                  const ranges: Record<string, string> = {
+                    today: "Today",
+                    yesterday: "Yesterday",
+                    "7days": "Last 7 days",
+                    "30days": "Last 30 days",
+                    "90days": "Last 90 days"
+                  };
+                  setDateRange(ranges[key as string] || dateRange);
+                }}
+              >
+                <DropdownItem key="today">Today</DropdownItem>
+                <DropdownItem key="yesterday">Yesterday</DropdownItem>
+                <DropdownItem key="7days">Last 7 days</DropdownItem>
+                <DropdownItem key="30days">Last 30 days</DropdownItem>
+                <DropdownItem key="90days">Last 90 days</DropdownItem>
               </DropdownMenu>
             </Dropdown>
 
             <Button color="primary">
-              <Icon icon="lucide:download" className="mr-2" />
+              <Icon icon="lucide:download" slot="start" />
               Export
             </Button>
           </div>
@@ -301,7 +313,7 @@ export default function Reports() {
                       </div>
                       <div className="h-64">
                         <ResponsiveContainer width="100%" height="100%">
-                          <BarChart data={projects?.map(p => ({ name: p.title.split(' - ')[1] || p.title, value: p.completionPercentage })) || []}>
+                          <BarChart data={(projects && projects.length > 0 ? projects.map(p => ({ name: p.title.split(' - ')[1] || p.title, value: p.completionPercentage })) : []) || []}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#333" />
                             <XAxis dataKey="name" stroke="#888" />
                             <YAxis stroke="#888" />

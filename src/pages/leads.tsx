@@ -89,20 +89,23 @@ export default function Leads() {
             <Dropdown>
               <DropdownTrigger>
                 <Button variant="flat">
-                  <Icon icon="lucide:arrow-up-down" className="mr-2" />
+                  <Icon icon="lucide:arrow-up-down" slot="start" />
                   Sort: {sortBy === "newest" ? "Newest First" : sortBy === "oldest" ? "Oldest First" : sortBy === "value-high" ? "Highest Value" : "Lowest Value"}
                 </Button>
               </DropdownTrigger>
-              <DropdownMenu aria-label="Sort options">
-                <DropdownItem key="newest" onPress={() => setSortBy("newest")}>Newest First</DropdownItem>
-                <DropdownItem key="oldest" onPress={() => setSortBy("oldest")}>Oldest First</DropdownItem>
-                <DropdownItem key="value-high" onPress={() => setSortBy("value-high")}>Highest Value</DropdownItem>
-                <DropdownItem key="value-low" onPress={() => setSortBy("value-low")}>Lowest Value</DropdownItem>
+              <DropdownMenu
+                aria-label="Sort options"
+                onAction={(key) => setSortBy(key as "newest" | "oldest" | "value-high" | "value-low")}
+              >
+                <DropdownItem key="newest">Newest First</DropdownItem>
+                <DropdownItem key="oldest">Oldest First</DropdownItem>
+                <DropdownItem key="value-high">Highest Value</DropdownItem>
+                <DropdownItem key="value-low">Lowest Value</DropdownItem>
               </DropdownMenu>
             </Dropdown>
 
             <Button color="primary">
-              <Icon icon="lucide:plus" className="mr-2" />
+              <Icon icon="lucide:plus" slot="start" />
               Add Lead
             </Button>
           </div>

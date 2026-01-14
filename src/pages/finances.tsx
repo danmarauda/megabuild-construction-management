@@ -84,19 +84,22 @@ export default function Finances() {
             <Dropdown>
               <DropdownTrigger>
                 <Button variant="flat">
-                  <Icon icon="lucide:calendar" className="mr-2" />
+                  <Icon icon="lucide:calendar" slot="start" />
                   {period === "monthly" ? "Monthly" : period === "quarterly" ? "Quarterly" : "Yearly"}
                 </Button>
               </DropdownTrigger>
-              <DropdownMenu aria-label="Time period">
-                <DropdownItem key="monthly" onPress={() => setPeriod("monthly")}>Monthly</DropdownItem>
-                <DropdownItem key="quarterly" onPress={() => setPeriod("quarterly")}>Quarterly</DropdownItem>
-                <DropdownItem key="yearly" onPress={() => setPeriod("yearly")}>Yearly</DropdownItem>
+              <DropdownMenu
+                aria-label="Time period"
+                onAction={(key) => setPeriod(key as "monthly" | "quarterly" | "yearly")}
+              >
+                <DropdownItem key="monthly">Monthly</DropdownItem>
+                <DropdownItem key="quarterly">Quarterly</DropdownItem>
+                <DropdownItem key="yearly">Yearly</DropdownItem>
               </DropdownMenu>
             </Dropdown>
 
             <Button color="primary">
-              <Icon icon="lucide:download" className="mr-2" />
+              <Icon icon="lucide:download" slot="start" />
               Export
             </Button>
           </div>

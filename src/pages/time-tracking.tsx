@@ -89,7 +89,7 @@ export default function TimeTracking() {
         <div className="flex justify-between items-center mb-6">
           <div className="text-2xl font-semibold text-white">Time Entries</div>
           <Button color="primary">
-            <Icon icon="lucide:plus" className="mr-2" />
+            <Icon icon="lucide:plus" slot="start" />
             New Time Entry
           </Button>
         </div>
@@ -139,23 +139,14 @@ export default function TimeTracking() {
                       <Icon icon="lucide:chevron-down" />
                     </Button>
                   </DropdownTrigger>
-                  <DropdownMenu aria-label="Worker selection">
-                    <DropdownItem
-                      key="all"
-                      onPress={() => setSelectedWorker(null)}
-                    >
-                      All Workers
-                    </DropdownItem>
-                    <React.Fragment>
-                      {(workers || []).map((worker) => (
-                        <DropdownItem
-                          key={worker.id}
-                          onPress={() => setSelectedWorker(worker)}
-                        >
-                          {worker.name}
-                        </DropdownItem>
-                      ))}
-                    </React.Fragment>
+                  <DropdownMenu
+                    aria-label="Worker selection"
+                    onAction={(key) => setSelectedWorker(key === "all" ? null : (workers || []).find(w => w.id === key) || null)}
+                  >
+                    <DropdownItem key="all">All Workers</DropdownItem>
+                    {(workers || []).map((worker) => (
+                      <DropdownItem key={worker.id}>{worker.name}</DropdownItem>
+                    ))}
                   </DropdownMenu>
                 </Dropdown>
               </div>
@@ -165,29 +156,19 @@ export default function TimeTracking() {
                   <DropdownTrigger>
                     <Button variant="flat" className="w-full justify-between">
                       {selectedProject
-                        ? (projects || []).find((p) => p.id === selectedProject)
-                            ?.title || "Unknown Project"
+                        ? (projects && projects.length > 0 ? (projects || []).find((p) => p.id === selectedProject)?.title || "Unknown Project" : "Unknown Project")
                         : "All Projects"}
                       <Icon icon="lucide:chevron-down" />
                     </Button>
                   </DropdownTrigger>
-                  <DropdownMenu aria-label="Project selection">
-                    <DropdownItem
-                      key="all"
-                      onPress={() => setSelectedProject(null)}
-                    >
-                      All Projects
-                    </DropdownItem>
-                    <React.Fragment>
-                      {(projects || []).map((project) => (
-                        <DropdownItem
-                          key={project.id}
-                          onPress={() => setSelectedProject(project.id)}
-                        >
-                          {project.title}
-                        </DropdownItem>
-                      ))}
-                    </React.Fragment>
+                  <DropdownMenu
+                    aria-label="Project selection"
+                    onAction={(key) => setSelectedProject(key === "all" ? null : key as string)}
+                  >
+                    <DropdownItem key="all">All Projects</DropdownItem>
+                    {(projects || []).map((project) => (
+                      <DropdownItem key={project.id}>{project.title}</DropdownItem>
+                    ))}
                   </DropdownMenu>
                 </Dropdown>
               </div>
@@ -200,37 +181,24 @@ export default function TimeTracking() {
                       <Icon icon="lucide:chevron-down" />
                     </Button>
                   </DropdownTrigger>
-                  <DropdownMenu aria-label="Date range selection">
-                    <DropdownItem
-                      key="today"
-                      onPress={() => setDateRange("Today")}
-                    >
-                      Today
-                    </DropdownItem>
-                    <DropdownItem
-                      key="yesterday"
-                      onPress={() => setDateRange("Yesterday")}
-                    >
-                      Yesterday
-                    </DropdownItem>
-                    <DropdownItem
-                      key="this-week"
-                      onPress={() => setDateRange("This Week")}
-                    >
-                      This Week
-                    </DropdownItem>
-                    <DropdownItem
-                      key="last-week"
-                      onPress={() => setDateRange("Last Week")}
-                    >
-                      Last Week
-                    </DropdownItem>
-                    <DropdownItem
-                      key="this-month"
-                      onPress={() => setDateRange("This Month")}
-                    >
-                      This Month
-                    </DropdownItem>
+                  <DropdownMenu
+                    aria-label="Date range selection"
+                    onAction={(key) => {
+                      const ranges: Record<string, string> = {
+                        today: "Today",
+                        yesterday: "Yesterday",
+                        "this-week": "This Week",
+                        "last-week": "Last Week",
+                        "this-month": "This Month"
+                      };
+                      setDateRange(ranges[key as string] || dateRange);
+                    }}
+                  >
+                    <DropdownItem key="today">Today</DropdownItem>
+                    <DropdownItem key="yesterday">Yesterday</DropdownItem>
+                    <DropdownItem key="this-week">This Week</DropdownItem>
+                    <DropdownItem key="last-week">Last Week</DropdownItem>
+                    <DropdownItem key="this-month">This Month</DropdownItem>
                   </DropdownMenu>
                 </Dropdown>
               </div>
