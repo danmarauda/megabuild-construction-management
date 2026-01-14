@@ -23,7 +23,7 @@ export default function Map() {
     React.useState<any>(null);
 
   React.useEffect(() => {
-    if (selectedProject && projects) {
+    if (selectedProject && projects && projects.length > 0) {
       const project = projects.find((p) => p.id === selectedProject);
       if (project) {
         setSelectedProjectData(project);
