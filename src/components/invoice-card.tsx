@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardBody, Chip, Button } from "@heroui/react";
+import { Card, Chip, Button } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import { Invoice } from "../types/project";
 import { format } from "date-fns";
@@ -22,15 +22,15 @@ export function InvoiceCard({ invoice }: InvoiceCardProps) {
 
   return (
     <Card className="bg-gray-900 border border-gray-800">
-      <CardBody>
+      <Card.Content>
         <div className="flex justify-between items-start">
           <div>
             <h3 className="text-lg font-medium text-white">{invoice.id}</h3>
             <Chip
               size="sm"
               color={status.color as any}
-              variant="flat"
-              startContent={<Icon icon={status.icon} width={14} height={14} />}
+              variant="tertiary"
+              slot="start"
               className="mt-2"
             >
               {invoice.status}
@@ -85,11 +85,11 @@ export function InvoiceCard({ invoice }: InvoiceCardProps) {
         </div>
 
         <div className="mt-4 flex gap-2 justify-end">
-          <Button variant="flat" size="sm">
+          <Button variant="tertiary" size="sm">
             <Icon icon="lucide:eye" className="mr-1" />
             View
           </Button>
-          <Button variant="flat" size="sm">
+          <Button variant="tertiary" size="sm">
             <Icon icon="lucide:printer" className="mr-1" />
             Print
           </Button>
@@ -108,7 +108,7 @@ export function InvoiceCard({ invoice }: InvoiceCardProps) {
             </Button>
           )}
         </div>
-      </CardBody>
+      </Card.Content>
     </Card>
   );
 }

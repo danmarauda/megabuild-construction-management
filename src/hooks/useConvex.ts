@@ -118,67 +118,104 @@ function transformTimeEntry(entry: any): TimeEntry {
   };
 }
 
-// Custom hooks for data fetching
-export function useProjects() {
+// Type for consistent hook return values
+type UseQueryResult<T> = {
+  data: T[];
+  isLoading: boolean;
+};
+
+// Custom hooks for data fetching with consistent return type
+export function useProjects(): UseQueryResult<Project> {
   const projects = useQuery(api.projects.listProjects);
-  return projects?.map((project: any) => transformProject(project)) ?? [];
+  return {
+    data: projects?.map((project: any) => transformProject(project)) ?? [],
+    isLoading: projects === undefined,
+  };
 }
 
 export function useProject(id: string) {
-  const project = useQuery(api.projects.getProject, { id });
+  const project = useQuery(api.projects.getProject, { id: id as any });
   return project ? transformProject(project) : undefined;
 }
 
-export function useTasks() {
-  return [];
+export function useTasks(): UseQueryResult<Task> {
+  // Tasks are currently embedded in projects
+  // TODO: Add tasks query to Convex backend
+  return {
+    data: [],
+    isLoading: false,
+  };
 }
 
-export function useTimeEntries(filters?: any) {
+export function useTimeEntries(filters?: any): UseQueryResult<TimeEntry> {
   const entries = useQuery(api.timeEntries.listTimeEntries, filters ?? {});
-  return entries?.map((entry: any) => transformTimeEntry(entry)) ?? [];
+  return {
+    data: entries?.map((entry: any) => transformTimeEntry(entry)) ?? [],
+    isLoading: entries === undefined,
+  };
 }
 
-export function useCustomers() {
+export function useCustomers(): UseQueryResult<Customer> {
   const customers = useQuery(api.customers.listCustomers);
-  return customers?.map((customer: any) => transformCustomer(customer)) ?? [];
+  return {
+    data: customers?.map((customer: any) => transformCustomer(customer)) ?? [],
+    isLoading: customers === undefined,
+  };
 }
 
-export function useLeads() {
+export function useLeads(): UseQueryResult<Lead> {
   const leads = useQuery(api.leads.listLeads);
-  const workers = useWorkers();
-  const workerMap = new Map(workers?.map((w) => [w.id, w]) || []);
-  return leads?.map((lead: any) =>
-    transformLead(lead, workerMap.get(lead.assigneeId) || ({} as Worker))
-  ) ?? [];
+  const workersResult = useWorkers();
+
+  const workerMap = new Map(workersResult.data.map((w) => [w.id, w]));
+
+  return {
+    data:
+      leads?.map((lead: any) =>
+        transformLead(lead, workerMap.get(lead.assigneeId) || ({} as Worker))
+      ) ?? [],
+    isLoading: leads === undefined || workersResult.isLoading,
+  };
 }
 
-export function useInvoices() {
+export function useInvoices(): UseQueryResult<Invoice> {
   const invoices = useQuery(api.invoices.listInvoices);
-  return invoices?.map((invoice: any) => transformInvoice(invoice)) ?? [];
+  return {
+    data: invoices?.map((invoice: any) => transformInvoice(invoice)) ?? [],
+    isLoading: invoices === undefined,
+  };
 }
 
-export function useEstimates() {
+export function useEstimates(): UseQueryResult<Estimate> {
   const estimates = useQuery(api.estimates.listEstimates);
-  return estimates?.map((estimate: any) => transformEstimate(estimate)) ?? [];
+  return {
+    data: estimates?.map((estimate: any) => transformEstimate(estimate)) ?? [],
+    isLoading: estimates === undefined,
+  };
 }
 
-export function useWorkers() {
+export function useWorkers(): UseQueryResult<Worker> {
   const workers = useQuery(api.workers.listWorkers);
-  return workers?.map((worker: any) => transformWorker(worker)) ?? [];
+  return {
+    data: workers?.map((worker: any) => transformWorker(worker)) ?? [],
+    isLoading: workers === undefined,
+  };
 }
 
 export function useDashboardData(): FinancialSummary | undefined {
   const summary = useQuery(api.financial.get);
-  return summary ? {
-    revenue: summary.revenue,
-    balance: summary.balance,
-    feesEarned: summary.feesEarned,
-    chargebackRate: summary.chargebackRate,
-    totalTransactions: summary.totalTransactions,
-    plannedPayouts: summary.plannedPayouts,
-    successfulPayments: summary.successfulPayments,
-    failedPayments: summary.failedPayments,
-  } : undefined;
+  return summary
+    ? {
+        revenue: summary.revenue,
+        balance: summary.balance,
+        feesEarned: summary.feesEarned,
+        chargebackRate: summary.chargebackRate,
+        totalTransactions: summary.totalTransactions,
+        plannedPayouts: summary.plannedPayouts,
+        successfulPayments: summary.successfulPayments,
+        failedPayments: summary.failedPayments,
+      }
+    : undefined;
 }
 
 export function useFinancialSummary(): FinancialSummary | undefined {

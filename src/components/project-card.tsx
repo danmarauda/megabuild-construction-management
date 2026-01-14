@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardBody, Button, Avatar, Progress } from "@heroui/react";
+import { Card, Button, Avatar } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import { Project } from "../types/project";
 import { format } from "date-fns";
@@ -10,42 +10,42 @@ interface ProjectCardProps {
 
 export function ProjectCard({ project }: ProjectCardProps) {
   const { title, customer, completionPercentage, tasks, team } = project;
-  
+
   const completedTasks = tasks.filter(task => task.status === 'completed').length;
   const totalTasks = tasks.length;
-  
+
   return (
     <Card className="mb-6 bg-gray-900 border border-gray-800">
-      <CardBody className="p-0">
+      <Card.Content className="p-0">
         <div className="flex items-center justify-between p-4 border-b border-gray-800">
           <div>
             <h3 className="text-lg font-medium text-white">{title}</h3>
             <div className="flex items-center gap-2 mt-1">
-              <Button variant="flat" size="sm">
+              <Button variant="tertiary" size="sm" onPress={() => {}}>
                 General
               </Button>
               <Icon icon="lucide:chevron-down" className="text-gray-400" />
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button isIconOnly variant="flat" size="sm">
+            <Button isIconOnly variant="tertiary" size="sm" onPress={() => {}}>
               <Icon icon="lucide:image" />
             </Button>
-            <Button isIconOnly variant="flat" size="sm">
+            <Button isIconOnly variant="tertiary" size="sm" onPress={() => {}}>
               <Icon icon="lucide:file-text" />
             </Button>
-            <Button isIconOnly variant="flat" size="sm">
+            <Button isIconOnly variant="tertiary" size="sm" onPress={() => {}}>
               <Icon icon="lucide:layout-grid" />
             </Button>
-            <Button isIconOnly variant="flat" size="sm">
+            <Button isIconOnly variant="tertiary" size="sm" onPress={() => {}}>
               <Icon icon="lucide:more-horizontal" />
             </Button>
-            <Button isIconOnly variant="flat" size="sm">
+            <Button isIconOnly variant="tertiary" size="sm" onPress={() => {}}>
               <Icon icon="lucide:maximize-2" />
             </Button>
           </div>
         </div>
-        
+
         <div className="p-4">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
@@ -56,13 +56,15 @@ export function ProjectCard({ project }: ProjectCardProps) {
               Complete by {format(new Date(project.endDate), "MMM dd, yyyy")}
             </div>
           </div>
-          
-          <Progress 
-            value={completionPercentage} 
-            color="warning"
-            className="mb-4"
-          />
-          
+
+          {/* Custom progress bar since Progress is not in v3 */}
+          <div className="w-full bg-gray-800 rounded-full h-2 mb-4">
+            <div
+              className="bg-warning h-2 rounded-full transition-all"
+              style={{ width: `${completionPercentage}%` }}
+            />
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
             {tasks.slice(0, 3).map((task) => (
               <div key={task.id} className="border border-gray-800 rounded-lg p-4 bg-gray-800/50">
@@ -83,11 +85,10 @@ export function ProjectCard({ project }: ProjectCardProps) {
                       {task.taskNumber}
                     </div>
                     <div className="flex items-center mt-2">
-                      <Avatar 
-                        src={task.assignee.avatar} 
-                        alt={task.assignee.name}
-                        size="sm"
-                      />
+                      <Avatar size="sm">
+                        <Avatar.Image src={task.assignee.avatar} alt={task.assignee.name} />
+                        <Avatar.Fallback>{task.assignee.name.charAt(0)}</Avatar.Fallback>
+                      </Avatar>
                       <span className="text-sm ml-2 text-gray-300">{task.assignee.name}</span>
                     </div>
                   </div>
@@ -96,7 +97,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
             ))}
           </div>
         </div>
-        
+
         <div className="border-t border-gray-800 p-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
@@ -112,47 +113,45 @@ export function ProjectCard({ project }: ProjectCardProps) {
                 </div>
               )}
               <div className="mt-2">
-                <Button variant="flat" size="sm" className="mr-2">
+                <Button variant="tertiary" size="sm" className="mr-2" onPress={() => {}}>
                   <Icon icon="lucide:phone" />
                 </Button>
-                <Button variant="flat" size="sm" className="mr-2">
+                <Button variant="tertiary" size="sm" className="mr-2" onPress={() => {}}>
                   <Icon icon="lucide:mail" />
                 </Button>
-                <Button variant="flat" size="sm">
+                <Button variant="tertiary" size="sm" onPress={() => {}}>
                   <Icon icon="lucide:map-pin" />
                 </Button>
               </div>
             </div>
-            
+
             <div>
               <h4 className="text-xs text-gray-400 uppercase mb-2">Project Manager</h4>
               {project.projectManager && (
                 <div className="flex items-center gap-2 text-gray-300">
-                  <Avatar 
-                    src={project.projectManager.avatar} 
-                    alt={project.projectManager.name}
-                    size="sm"
-                  />
+                  <Avatar size="sm">
+                    <Avatar.Image src={project.projectManager.avatar} alt={project.projectManager.name} />
+                    <Avatar.Fallback>{project.projectManager.name.charAt(0)}</Avatar.Fallback>
+                  </Avatar>
                   <span>{project.projectManager.name}</span>
-                  <Button variant="flat" size="sm" isIconOnly>
+                  <Button variant="tertiary" size="sm" isIconOnly onPress={() => {}}>
                     <Icon icon="lucide:phone" />
                   </Button>
                 </div>
               )}
             </div>
-            
+
             <div>
               <h4 className="text-xs text-gray-400 uppercase mb-2">Workers</h4>
               <div className="flex flex-wrap gap-2">
                 {team.map((worker) => (
                   <div key={worker.id} className="flex items-center gap-2 text-gray-300">
-                    <Avatar 
-                      src={worker.avatar} 
-                      alt={worker.name}
-                      size="sm"
-                    />
+                    <Avatar size="sm">
+                      <Avatar.Image src={worker.avatar} alt={worker.name} />
+                      <Avatar.Fallback>{worker.name.charAt(0)}</Avatar.Fallback>
+                    </Avatar>
                     <span>{worker.name}</span>
-                    <Button variant="flat" size="sm" isIconOnly>
+                    <Button variant="tertiary" size="sm" isIconOnly onPress={() => {}}>
                       <Icon icon="lucide:phone" />
                     </Button>
                   </div>
@@ -161,7 +160,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
             </div>
           </div>
         </div>
-      </CardBody>
+      </Card.Content>
     </Card>
   );
 }

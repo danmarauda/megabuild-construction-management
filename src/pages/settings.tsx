@@ -1,6 +1,6 @@
 import React from "react";
 import { Header } from "../components/header";
-import { Card, CardBody, Tabs, Tab, Input, Button, Switch, Avatar, Divider } from "@heroui/react";
+import { Card, Tabs, Tab, Input, Button, Switch, Avatar } from "@heroui/react";
 import { Icon } from "@iconify/react";
 
 export default function Settings() {
@@ -12,7 +12,7 @@ export default function Settings() {
       
       <div className="p-6">
         <Card className="bg-gray-900 border border-gray-800">
-          <CardBody>
+          <Card.Content>
             <Tabs 
               aria-label="Settings" 
               selectedKey={selected} 
@@ -95,7 +95,7 @@ export default function Settings() {
                   </div>
                 </div>
                 
-                <Divider className="my-8" />
+                <div className="border-t border-gray-700 my-8" />
                 
                 <div>
                   <h3 className="text-lg font-medium text-white mb-4">Preferences</h3>
@@ -172,7 +172,7 @@ export default function Settings() {
                 </div>
               </div>
             )}
-          </CardBody>
+          </Card.Content>
         </Card>
       </div>
     </div>

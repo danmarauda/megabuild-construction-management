@@ -1,9 +1,8 @@
 import React from "react";
 import { Header } from "../components/header";
-import { FileCard } from "../components/file-card";
 import {
   Card,
-  CardBody,
+
   Button,
   Input,
   Dropdown,
@@ -14,6 +13,7 @@ import {
   Tab,
 } from "@heroui/react";
 import { Icon } from "@iconify/react";
+import { EmptyStates } from "../components/empty-state";
 import { useProjects } from "../hooks/useConvex";
 
 export default function Photos() {
@@ -25,30 +25,28 @@ export default function Photos() {
     null,
   );
 
-  const filteredFiles = React.useMemo(() => {
-    // TODO: Replace with actual files from Convex when available
-    let filtered: any[] = [];
+  // TODO: Replace with actual files from Convex when available
+  const filteredFiles: any[] = [];
 
-    // Filter by type
-    if (selected !== "all") {
-      filtered = filtered.filter((file) => file.type === selected);
-    }
+  // Filter by type
+  if (selected !== "all") {
+    filteredFiles.filter((file) => file.type === selected);
+  }
 
-    // Filter by search text
-    if (searchText) {
-      const lowercaseSearch = searchText.toLowerCase();
-      filtered = filtered.filter((file) =>
-        file.name.toLowerCase().includes(lowercaseSearch),
-      );
-    }
+  // Filter by search text
+  if (searchText) {
+    const lowercaseSearch = searchText.toLowerCase();
+    filteredFiles.filter((file) =>
+      file.name.toLowerCase().includes(lowercaseSearch),
+    );
+  }
 
-    // Filter by project
-    if (selectedProject) {
-      filtered = filtered.filter((file) => file.projectId === selectedProject);
-    }
+  // Filter by project
+  if (selectedProject) {
+    filteredFiles.filter((file) => file.projectId === selectedProject);
+  }
 
-    return filtered;
-  }, [selected, searchText, selectedProject]);
+  const showEmptyState = filteredFiles.length === 0 && !isLoading;
 
   return (
     <div className="flex-1 overflow-auto">
@@ -123,7 +121,7 @@ export default function Photos() {
         </div>
 
         <Card className="bg-gray-900 border border-gray-800 mb-6">
-          <CardBody>
+          <Card.Content>
             <Tabs
               aria-label="File types"
               selectedKey={selected}
@@ -136,7 +134,7 @@ export default function Photos() {
               <Tab key="document" title="Documents" />
               <Tab key="other" title="Other Files" />
             </Tabs>
-          </CardBody>
+          </Card.Content>
         </Card>
 
         {isLoading ? (
@@ -149,6 +147,8 @@ export default function Photos() {
               Loading files...
             </div>
           </div>
+        ) : showEmptyState ? (
+          <EmptyStates.files />
         ) : (
           <div
             className={
@@ -158,23 +158,12 @@ export default function Photos() {
             }
           >
             {filteredFiles.map((file) => (
-              <FileCard key={file.id} file={file} />
+              <Card key={file.id} className="bg-gray-900 border border-gray-800">
+                <Card.Content>
+                  <div className="text-gray-300">{file.name}</div>
+                </Card.Content>
+              </Card>
             ))}
-
-            {filteredFiles.length === 0 && (
-              <div className="py-12 text-center col-span-2">
-                <Icon
-                  icon="lucide:file"
-                  className="text-4xl text-gray-400 mx-auto"
-                />
-                <div className="mt-2 text-xl font-medium text-gray-300">
-                  No files found
-                </div>
-                <div className="mt-1 text-gray-400">
-                  Try adjusting your filters or upload new files
-                </div>
-              </div>
-            )}
           </div>
         )}
       </div>

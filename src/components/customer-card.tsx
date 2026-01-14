@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardBody, Chip, Button, Avatar } from "@heroui/react";
+import { Card, Chip, Button, Avatar } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import { Customer } from "../types/project";
 
@@ -10,22 +10,20 @@ interface CustomerCardProps {
 export function CustomerCard({ customer }: CustomerCardProps) {
   return (
     <Card className="bg-gray-900 border border-gray-800">
-      <CardBody>
+      <Card.Content>
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-4">
-            <Avatar 
-              src={customer.avatar} 
-              name={customer.name}
-              size="lg"
-              className="w-16 h-16"
-            />
+            <Avatar size="lg">
+              <Avatar.Image src={customer.avatar} />
+              <Avatar.Fallback>{customer.name.split(' ').map(n => n[0]).join('')}</Avatar.Fallback>
+            </Avatar>
             <div>
               <h3 className="text-xl font-medium text-white">{customer.name}</h3>
               <div className="mt-1">
                 <Chip 
                   size="sm" 
                   color={customer.status === 'active' ? "success" : "default"}
-                  variant="flat"
+                  variant="tertiary"
                 >
                   {customer.status}
                 </Chip>
@@ -33,11 +31,11 @@ export function CustomerCard({ customer }: CustomerCardProps) {
             </div>
           </div>
           <div className="flex flex-col gap-2">
-            <Button variant="flat" size="sm">
+            <Button variant="tertiary" size="sm">
               <Icon icon="lucide:mail" className="mr-1" />
               Email
             </Button>
-            <Button variant="flat" size="sm">
+            <Button variant="tertiary" size="sm">
               <Icon icon="lucide:phone" className="mr-1" />
               Call
             </Button>
@@ -64,14 +62,14 @@ export function CustomerCard({ customer }: CustomerCardProps) {
           {customer.projects.length > 0 && (
             <div className="flex gap-2 mt-2">
               {customer.projects.map(projectId => (
-                <Chip key={projectId} size="sm" variant="flat">Project #{projectId}</Chip>
+                <Chip key={projectId} size="sm" variant="tertiary">Project #{projectId}</Chip>
               ))}
             </div>
           )}
         </div>
         
         <div className="mt-4 flex gap-2 justify-end">
-          <Button variant="flat" size="sm">
+          <Button variant="tertiary" size="sm">
             <Icon icon="lucide:file-text" className="mr-1" />
             View Invoices
           </Button>
@@ -80,7 +78,7 @@ export function CustomerCard({ customer }: CustomerCardProps) {
             New Project
           </Button>
         </div>
-      </CardBody>
+      </Card.Content>
     </Card>
   );
 }

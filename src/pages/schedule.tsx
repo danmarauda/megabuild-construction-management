@@ -1,7 +1,8 @@
 import React from "react";
 import { Header } from "../components/header";
-import { Button, Card, CardBody, Tabs, Tab, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Chip, Avatar } from "@heroui/react";
+import { Button, Card, Tabs, Tab } from "@heroui/react";
 import { Icon } from "@iconify/react";
+import { EmptyStates } from "../components/empty-state";
 import { useTasks } from "../hooks/useConvex";
 import { format, addDays, startOfWeek, endOfWeek, eachDayOfInterval } from "date-fns";
 
@@ -25,7 +26,7 @@ export default function Schedule() {
 
   const startDate = view === "week" ? startOfWeek(currentDate, { weekStartsOn: 1 }) : currentDate;
   const endDate = view === "week" ? endOfWeek(currentDate, { weekStartsOn: 1 }) : currentDate;
-  
+
   const weekDays = eachDayOfInterval({ start: startDate, end: endDate });
 
   // Filter tasks for the current week view
@@ -33,13 +34,13 @@ export default function Schedule() {
     return (tasks || []).filter(task => {
       const taskStart = new Date(task.start);
       const taskEnd = new Date(task.end);
-      
+
       if (view === "week") {
         return taskStart >= startDate && taskStart <= endDate;
       } else if (view === "day") {
         return format(taskStart, "yyyy-MM-dd") === format(currentDate, "yyyy-MM-dd");
       }
-      
+
       return true;
     });
   }, [tasks, view, currentDate, startDate, endDate]);
@@ -62,16 +63,8 @@ export default function Schedule() {
     return (
       <div className="flex-1 overflow-auto">
         <Header title="Schedule" />
-        <div className="p-6 flex items-center justify-center h-64">
-          <div className="text-center">
-            <Icon icon="lucide:calendar" className="text-5xl text-gray-600 mx-auto mb-4" />
-            <div className="text-xl text-gray-400 mb-2">No Scheduled Tasks</div>
-            <div className="text-gray-500 text-sm mb-4">Create tasks to see them on the schedule</div>
-            <Button color="primary">
-              <Icon icon="lucide:plus" className="mr-2" />
-              Create First Task
-            </Button>
-          </div>
+        <div className="p-6">
+          <EmptyStates.schedule />
         </div>
       </div>
     );
@@ -80,7 +73,7 @@ export default function Schedule() {
   return (
     <div className="flex-1 overflow-auto">
       <Header title="Schedule" />
-      
+
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-4">
@@ -101,11 +94,11 @@ export default function Schedule() {
             </Button>
             <Button variant="light" onPress={() => setCurrentDate(new Date())}>Today</Button>
           </div>
-          
+
           <div className="flex gap-2">
-            <Tabs 
-              aria-label="View options" 
-              selectedKey={view} 
+            <Tabs
+              aria-label="View options"
+              selectedKey={view}
               onSelectionChange={setView as any}
               size="sm"
             >
@@ -113,21 +106,21 @@ export default function Schedule() {
               <Tab key="week" title="Week" />
               <Tab key="month" title="Month" />
             </Tabs>
-            
+
             <Button color="primary">
               <Icon icon="lucide:plus" className="mr-2" />
               New Event
             </Button>
           </div>
         </div>
-        
+
         {view === "week" && (
           <Card className="bg-gray-900 border border-gray-800">
-            <CardBody className="p-0">
+            <Card.Content className="p-0">
               <div className="grid grid-cols-7">
                 {weekDays.map((day, i) => (
-                  <div 
-                    key={i} 
+                  <div
+                    key={i}
                     className={`p-2 text-center border-b border-r border-gray-800 ${
                       format(day, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd") ? "bg-gray-800" : ""
                     }`}
@@ -137,7 +130,7 @@ export default function Schedule() {
                   </div>
                 ))}
               </div>
-              
+
               <div className="grid grid-cols-7" style={{ minHeight: "600px" }}>
                 {weekDays.map((day, dayIndex) => (
                   <div key={dayIndex} className="border-r border-gray-800 p-1 relative">
@@ -158,11 +151,9 @@ export default function Schedule() {
                             <div className="text-gray-300">{task.hours}h</div>
                           </div>
                           <div className="mt-1 flex items-center gap-1">
-                            <Avatar 
-                              src={task.assignee.avatar} 
-                              name={task.assignee.name}
-                              size="sm"
-                              className="w-4 h-4"
+                            <Icon
+                              icon="lucide:user"
+                              className="w-3 h-3 text-gray-300"
                             />
                             <span className="text-gray-300 text-xxs">{task.assignee.name}</span>
                           </div>
@@ -172,13 +163,13 @@ export default function Schedule() {
                   </div>
                 ))}
               </div>
-            </CardBody>
+            </Card.Content>
           </Card>
         )}
-        
+
         {view === "day" && (
           <Card className="bg-gray-900 border border-gray-800">
-            <CardBody>
+            <Card.Content>
               <div className="flex">
                 <div className="w-16 border-r border-gray-800">
                   {Array.from({ length: 24 }).map((_, i) => (
@@ -217,13 +208,13 @@ export default function Schedule() {
                   ))}
                 </div>
               </div>
-            </CardBody>
+            </Card.Content>
           </Card>
         )}
-        
+
         {view === "month" && (
           <Card className="bg-gray-900 border border-gray-800">
-            <CardBody>
+            <Card.Content>
               <div className="text-center text-xl text-gray-300 py-20">
                 <Icon icon="lucide:calendar" className="text-5xl mx-auto mb-4" />
                 <div>Month view is under development</div>
@@ -231,7 +222,7 @@ export default function Schedule() {
                   Switch to Week View
                 </Button>
               </div>
-            </CardBody>
+            </Card.Content>
           </Card>
         )}
       </div>

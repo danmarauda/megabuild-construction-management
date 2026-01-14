@@ -3,7 +3,7 @@ import { Header } from "../components/header";
 import { TimeEntryList } from "../components/time-entry-list";
 import {
   Card,
-  CardBody,
+
   CardHeader,
   Button,
   Input,
@@ -13,6 +13,7 @@ import {
   DropdownItem,
 } from "@heroui/react";
 import { Icon } from "@iconify/react";
+import { EmptyStates } from "../components/empty-state";
 import { useTimeEntries, useWorkers, useProjects } from "../hooks/useConvex";
 import { Worker } from "../types/project";
 
@@ -73,16 +74,8 @@ export default function TimeTracking() {
     return (
       <div className="flex-1 overflow-auto">
         <Header title="Time Tracking" />
-        <div className="p-6 flex items-center justify-center h-64">
-          <div className="text-center">
-            <Icon icon="lucide:clock" className="text-5xl text-gray-600 mx-auto mb-4" />
-            <div className="text-xl text-gray-400 mb-2">No Time Entries Yet</div>
-            <div className="text-gray-500 text-sm mb-4">Start tracking time on your projects</div>
-            <Button color="primary">
-              <Icon icon="lucide:plus" className="mr-2" />
-              Create First Time Entry
-            </Button>
-          </div>
+        <div className="p-6">
+          <EmptyStates.timeEntries />
         </div>
       </div>
     );
@@ -103,30 +96,30 @@ export default function TimeTracking() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           <Card className="bg-gray-900 border border-gray-800">
-            <CardBody>
+            <Card.Content>
               <div className="text-gray-400 text-sm">Total Hours</div>
               <div className="text-3xl font-semibold text-white mt-1">
                 {totalHours.toFixed(1)}
               </div>
-            </CardBody>
+            </Card.Content>
           </Card>
 
           <Card className="bg-gray-900 border border-gray-800">
-            <CardBody>
+            <Card.Content>
               <div className="text-gray-400 text-sm">Workers Tracked</div>
               <div className="text-3xl font-semibold text-white mt-1">
                 {new Set((timeEntries || []).map((e) => e.workerId)).size}
               </div>
-            </CardBody>
+            </Card.Content>
           </Card>
 
           <Card className="bg-gray-900 border border-gray-800">
-            <CardBody>
+            <Card.Content>
               <div className="text-gray-400 text-sm">Active Projects</div>
               <div className="text-3xl font-semibold text-white mt-1">
                 {projects?.length || 0}
               </div>
-            </CardBody>
+            </Card.Content>
           </Card>
         </div>
 
@@ -136,7 +129,7 @@ export default function TimeTracking() {
               Filter Time Entries
             </div>
           </CardHeader>
-          <CardBody>
+          <Card.Content>
             <div className="flex flex-wrap gap-4">
               <div className="flex-1 min-w-[200px]">
                 <Dropdown>
@@ -242,13 +235,13 @@ export default function TimeTracking() {
                 </Dropdown>
               </div>
             </div>
-          </CardBody>
+          </Card.Content>
         </Card>
 
         <Card className="bg-gray-900 border border-gray-800">
-          <CardBody>
+          <Card.Content>
             <TimeEntryList timeEntries={filteredTimeEntries} />
-          </CardBody>
+          </Card.Content>
         </Card>
       </div>
     </div>

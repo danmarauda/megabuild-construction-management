@@ -1,23 +1,36 @@
 import React from "react";
 import { Header } from "../components/header";
 import { TaskList } from "../components/task-list";
-import { Tabs, Tab, Card, CardBody, Input, Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@heroui/react";
+import { Tabs, Tab, Card, Input, Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@heroui/react";
 import { Icon } from "@iconify/react";
+import { EmptyStates } from "../components/empty-state";
 import { useTasks } from "../hooks/useConvex";
 
 export default function Tasks() {
-  const tasks = useTasks();
+  const { data: tasks, isLoading } = useTasks();
   const [selected, setSelected] = React.useState("all");
   const [searchText, setSearchText] = React.useState("");
 
-  // Loading state
-  if (!tasks) {
-    return <div className="p-6"><p className="text-muted-foreground">Loading tasks...</p></div>;
+  if (isLoading) {
+    return (
+      <div className="flex-1 overflow-auto">
+        <Header title="Task List" />
+        <div className="p-6 flex items-center justify-center h-64">
+          <div className="animate-pulse text-gray-400">Loading tasks...</div>
+        </div>
+      </div>
+    );
   }
 
-  // Empty state
   if (tasks.length === 0) {
-    return <div className="p-6"><p className="text-muted-foreground">No tasks found. Tasks will appear here once assigned.</p></div>;
+    return (
+      <div className="flex-1 overflow-auto">
+        <Header title="Task List" />
+        <div className="p-6">
+          <EmptyStates.tasks />
+        </div>
+      </div>
+    );
   }
 
   const filteredTasks = React.useMemo(() => {
@@ -44,7 +57,7 @@ export default function Tasks() {
   return (
     <div className="flex-1 overflow-auto">
       <Header title="Task List" />
-      
+
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
           <div className="flex-1 max-w-md">
@@ -56,7 +69,7 @@ export default function Tasks() {
               className="bg-gray-900"
             />
           </div>
-          
+
           <div className="flex gap-2">
             <Dropdown>
               <DropdownTrigger>
@@ -72,19 +85,19 @@ export default function Tasks() {
                 <DropdownItem key="project">By Project</DropdownItem>
               </DropdownMenu>
             </Dropdown>
-            
+
             <Button color="primary">
               <Icon icon="lucide:plus" className="mr-2" />
               Add Task
             </Button>
           </div>
         </div>
-        
+
         <Card className="bg-gray-900 border border-gray-800">
-          <CardBody>
-            <Tabs 
-              aria-label="Task status" 
-              selectedKey={selected} 
+          <Card.Content>
+            <Tabs
+              aria-label="Task status"
+              selectedKey={selected}
               onSelectionChange={setSelected as any}
               color="primary"
               variant="underlined"
@@ -96,9 +109,9 @@ export default function Tasks() {
               <Tab key="completed" title="Completed" />
               <Tab key="overdue" title="Overdue" />
             </Tabs>
-            
+
             <TaskList tasks={filteredTasks} />
-          </CardBody>
+          </Card.Content>
         </Card>
       </div>
     </div>

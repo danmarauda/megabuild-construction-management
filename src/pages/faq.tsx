@@ -1,6 +1,6 @@
 import React from "react";
 import { Header } from "../components/header";
-import { Card, CardBody, Input, Button, Accordion, AccordionItem } from "@heroui/react";
+import { Card, Input, Button, Accordion, AccordionItem } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import { faqCategories } from "../data/mock-data";
 
@@ -31,7 +31,7 @@ export default function Faq() {
       
       <div className="p-6">
         <Card className="bg-gray-900 border border-gray-800 mb-8">
-          <CardBody className="text-center py-10">
+          <Card.Content className="text-center py-10">
             <h2 className="text-2xl font-bold text-white mb-4">How can we help you?</h2>
             <div className="max-w-lg mx-auto">
               <Input
@@ -43,7 +43,7 @@ export default function Faq() {
                 className="bg-gray-800"
               />
             </div>
-          </CardBody>
+          </Card.Content>
         </Card>
         
         {filteredFaqs.map((category) => (

@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardBody, CardHeader, Progress } from "@heroui/react";
+import { Card, CardHeader } from "@heroui/react";
 
 interface PaymentStatusCardProps {
   title: string;
@@ -29,13 +29,17 @@ export function PaymentStatusCard({
           </div>
         </div>
       </CardHeader>
-      <CardBody>
+      <Card.Content>
         <h4 className="text-sm mb-2 text-gray-300">Payment count</h4>
-        <Progress 
-          value={successPercentage} 
-          color="secondary"
-          className="mb-4"
-        />
+        <div
+          className="w-full h-2 bg-gray-800 rounded-full mb-4"
+          style={{ backgroundColor: 'rgb(59, 130, 246)' }}
+        >
+          <div
+            className="h-full bg-secondary rounded-full"
+            style={{ width: `${successPercentage}%` }}
+          />
+        </div>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-sm bg-secondary"></div>
@@ -48,7 +52,7 @@ export function PaymentStatusCard({
             <span className="text-sm font-medium text-white">{failedAmount}</span>
           </div>
         </div>
-      </CardBody>
+      </Card.Content>
     </Card>
   );
 }

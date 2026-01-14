@@ -1,29 +1,32 @@
 import React from "react";
 import { Header } from "../components/header";
 import { ProjectCard } from "../components/project-card";
+import { EmptyStates } from "../components/empty-state";
 import { useProjects } from "../hooks/useConvex";
 
 export default function Projects() {
-  const projects = useProjects();
-
-  if (!projects) {
-    return <div className="p-6"><p className="text-muted-foreground">Loading projects...</p></div>;
-  }
-
-  if (projects.length === 0) {
-    return <div className="p-6"><p className="text-muted-foreground">No projects found. Create your first project to get started.</p></div>;
-  }
+  const { data: projects, isLoading } = useProjects();
 
   return (
     <div className="flex-1 overflow-auto">
       <Header title="Projects" />
 
       <div className="p-6">
-        <div className="space-y-6">
-          {projects.map((project) => (
-            <ProjectCard key={project.id} project={project} />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+              <div className="animate-pulse text-gray-400 mb-2">Loading projects...</div>
+            </div>
+          </div>
+        ) : projects.length === 0 ? (
+          <EmptyStates.projects />
+        ) : (
+          <div className="space-y-6">
+            {projects.map((project) => (
+              <ProjectCard key={project.id} project={project} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

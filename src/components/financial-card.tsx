@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardBody } from "@heroui/react";
+import { Card } from "@heroui/react";
 import { Icon } from "@iconify/react";
 
 interface FinancialCardProps {
@@ -14,7 +14,7 @@ interface FinancialCardProps {
 export function FinancialCard({ title, value, change, isPositive, period, icon }: FinancialCardProps) {
   return (
     <Card className="w-full bg-gray-900 border border-gray-800">
-      <CardBody>
+      <Card.Content>
         <div className="flex items-center justify-between mb-2">
           <div className="text-gray-400 text-sm flex items-center gap-1">
             {title}
@@ -32,7 +32,7 @@ export function FinancialCard({ title, value, change, isPositive, period, icon }
           <div className="text-xs text-gray-400">{period}</div>
           <Icon icon="lucide:chevron-right" className="text-gray-400" />
         </div>
-      </CardBody>
+      </Card.Content>
     </Card>
   );
 }

@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardBody, Button } from "@heroui/react";
+import { Card, Button } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import { File } from "../types/project";
 import { format } from "date-fns";
@@ -35,7 +35,7 @@ export function FileCard({ file }: FileCardProps) {
 
   return (
     <Card className="bg-gray-900 border border-gray-800">
-      <CardBody>
+      <Card.Content>
         <div className="flex items-center gap-4">
           {file.type === 'image' ? (
             <div className="w-16 h-16 rounded-md overflow-hidden bg-gray-800">
@@ -68,23 +68,23 @@ export function FileCard({ file }: FileCardProps) {
           
           <div className="flex flex-col gap-2">
             {file.type === 'image' ? (
-              <Button variant="flat" size="sm">
+              <Button variant="tertiary" size="sm">
                 <Icon icon="lucide:eye" className="mr-1" />
                 View
               </Button>
             ) : (
-              <Button variant="flat" size="sm">
+              <Button variant="tertiary" size="sm">
                 <Icon icon="lucide:external-link" className="mr-1" />
                 Open
               </Button>
             )}
-            <Button variant="flat" size="sm">
+            <Button variant="tertiary" size="sm">
               <Icon icon="lucide:download" className="mr-1" />
               Download
             </Button>
           </div>
         </div>
-      </CardBody>
+      </Card.Content>
     </Card>
   );
 }

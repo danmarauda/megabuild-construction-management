@@ -1,21 +1,37 @@
 import React from "react";
 import { Header } from "../components/header";
 import { LeadCard } from "../components/lead-card";
-import { Card, CardBody, CardHeader, Button, Input, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Tabs, Tab } from "@heroui/react";
+import { Card, Button, Input, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Tabs, Tab } from "@heroui/react";
 import { Icon } from "@iconify/react";
+import { EmptyStates } from "../components/empty-state";
 import { useLeads } from "../hooks/useConvex";
 
 export default function Leads() {
-  const leads = useLeads();
+  const { data: leads, isLoading } = useLeads();
   const [selected, setSelected] = React.useState("all");
   const [searchText, setSearchText] = React.useState("");
   const [sortBy, setSortBy] = React.useState("newest");
 
-  if (!leads) {
-    return <div className="p-6"><p className="text-muted-foreground">Loading leads...</p></div>;
+  if (isLoading) {
+    return (
+      <div className="flex-1 overflow-auto">
+        <Header title="Lead Pipeline" />
+        <div className="p-6 flex items-center justify-center h-64">
+          <div className="animate-pulse text-gray-400">Loading leads...</div>
+        </div>
+      </div>
+    );
   }
+
   if (leads.length === 0) {
-    return <div className="p-6"><p className="text-muted-foreground">No leads found. Add your first lead to get started.</p></div>;
+    return (
+      <div className="flex-1 overflow-auto">
+        <Header title="Lead Pipeline" />
+        <div className="p-6">
+          <EmptyStates.leads />
+        </div>
+      </div>
+    );
   }
 
   const filteredLeads = React.useMemo(() => {
@@ -56,7 +72,7 @@ export default function Leads() {
   return (
     <div className="flex-1 overflow-auto">
       <Header title="Lead Pipeline" />
-      
+
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
           <div className="flex-1 max-w-md">
@@ -68,7 +84,7 @@ export default function Leads() {
               className="bg-gray-900"
             />
           </div>
-          
+
           <div className="flex gap-2">
             <Dropdown>
               <DropdownTrigger>
@@ -84,43 +100,41 @@ export default function Leads() {
                 <DropdownItem key="value-low" onPress={() => setSortBy("value-low")}>Lowest Value</DropdownItem>
               </DropdownMenu>
             </Dropdown>
-            
+
             <Button color="primary">
               <Icon icon="lucide:plus" className="mr-2" />
               Add Lead
             </Button>
           </div>
         </div>
-        
+
         <Card className="bg-gray-900 border border-gray-800 mb-6">
-          <CardBody>
-            <Tabs 
-              aria-label="Lead status" 
-              selectedKey={selected} 
+          <Card.Content>
+            <Tabs
+              aria-label="Lead status"
+              selectedKey={selected}
               onSelectionChange={setSelected as any}
               color="primary"
               variant="underlined"
             >
               {statuses.map(status => (
-                <Tab 
-                  key={status} 
-                  title={status === "all" ? "All Leads" : status.charAt(0).toUpperCase() + status.slice(1)} 
+                <Tab
+                  key={status}
+                  title={status === "all" ? "All Leads" : status.charAt(0).toUpperCase() + status.slice(1)}
                 />
               ))}
             </Tabs>
-          </CardBody>
+          </Card.Content>
         </Card>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredLeads.map(lead => (
             <LeadCard key={lead.id} lead={lead} />
           ))}
-          
+
           {filteredLeads.length === 0 && (
-            <div className="col-span-3 py-12 text-center">
-              <Icon icon="lucide:database" className="text-4xl text-gray-400 mx-auto" />
-              <div className="mt-2 text-xl font-medium text-gray-300">No leads found</div>
-              <div className="mt-1 text-gray-400">Try adjusting your filters or create a new lead</div>
+            <div className="col-span-3">
+              <EmptyStates.filtered />
             </div>
           )}
         </div>

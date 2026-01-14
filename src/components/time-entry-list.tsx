@@ -1,5 +1,5 @@
 import React from "react";
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Avatar, Button } from "@heroui/react";
+import { Avatar, Button } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import { TimeEntry } from "../types/project";
 import { useWorkers, useProjects } from "../hooks/useConvex";
@@ -31,48 +31,49 @@ export function TimeEntryList({ timeEntries }: TimeEntryListProps) {
   }
 
   return (
-    <Table aria-label="Time entry list">
-      <TableHeader>
-        <TableColumn>WORKER</TableColumn>
-        <TableColumn>PROJECT</TableColumn>
-        <TableColumn>DATE</TableColumn>
-        <TableColumn>HOURS</TableColumn>
-        <TableColumn>NOTES</TableColumn>
-        <TableColumn>ACTIONS</TableColumn>
-      </TableHeader>
-      <TableBody>
+    <table className="w-full border-collapse">
+      <thead className="bg-gray-800">
+        <tr>
+          <th className="text-left p-3 text-gray-300 font-medium border-b border-gray-700">WORKER</th>
+          <th className="text-left p-3 text-gray-300 font-medium border-b border-gray-700">PROJECT</th>
+          <th className="text-left p-3 text-gray-300 font-medium border-b border-gray-700">DATE</th>
+          <th className="text-left p-3 text-gray-300 font-medium border-b border-gray-700">HOURS</th>
+          <th className="text-left p-3 text-gray-300 font-medium border-b border-gray-700">NOTES</th>
+          <th className="text-left p-3 text-gray-300 font-medium border-b border-gray-700">ACTIONS</th>
+        </tr>
+      </thead>
+      <tbody>
         {timeEntries.map((entry) => {
           const worker = getWorker(entry.workerId);
           if (!worker) return null;
 
           return (
-            <TableRow key={entry.id} className="border-b border-gray-800">
-              <TableCell>
+            <tr key={entry.id} className="border-b border-gray-800 hover:bg-gray-800/50">
+              <td className="p-3 text-gray-300">
                 <div className="flex items-center gap-2">
-                  <Avatar
-                    src={worker.avatar}
-                    name={worker.name}
-                    size="sm"
-                  />
+                  <Avatar size="sm">
+                    <Avatar.Image src={worker.avatar} />
+                    <Avatar.Fallback>{worker.name.split(' ').map(n => n[0]).join('')}</Avatar.Fallback>
+                  </Avatar>
                   <div>
                     <div className="text-sm font-medium text-gray-300">{worker.name}</div>
                     <div className="text-xs text-gray-400">{worker.role}</div>
                   </div>
                 </div>
-              </TableCell>
-              <TableCell>
+              </td>
+              <td className="p-3 text-gray-300">
                 <div className="text-gray-300">{getProject(entry.projectId)}</div>
-              </TableCell>
-              <TableCell>
+              </td>
+              <td className="p-3 text-gray-300">
                 <div className="text-gray-300">{format(new Date(entry.date), "MMM dd, yyyy")}</div>
-              </TableCell>
-              <TableCell>
+              </td>
+              <td className="p-3 text-gray-300">
                 <div className="text-gray-300">{entry.hours}</div>
-              </TableCell>
-              <TableCell>
+              </td>
+              <td className="p-3 text-gray-300">
                 <div className="text-gray-300">{entry.notes}</div>
-              </TableCell>
-              <TableCell>
+              </td>
+              <td className="p-3 text-gray-300">
                 <div className="flex items-center gap-2">
                   <Button isIconOnly variant="light" size="sm">
                     <Icon icon="lucide:edit" className="text-gray-400" />
@@ -81,11 +82,11 @@ export function TimeEntryList({ timeEntries }: TimeEntryListProps) {
                     <Icon icon="lucide:trash-2" className="text-gray-400" />
                   </Button>
                 </div>
-              </TableCell>
-            </TableRow>
+              </td>
+            </tr>
           );
         })}
-      </TableBody>
-    </Table>
+      </tbody>
+    </table>
   );
 }

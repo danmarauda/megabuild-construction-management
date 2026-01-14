@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardBody, CardHeader } from "@heroui/react";
+import { Card, CardHeader } from "@heroui/react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 interface ChartData {
@@ -25,7 +25,7 @@ export function ChartCard({ title, value, period, data, color = "#006FEE" }: Cha
           <p className="text-xs text-gray-400">{period}</p>
         </div>
       </CardHeader>
-      <CardBody className="h-64 overflow-hidden">
+      <Card.Content className="h-64 overflow-hidden">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#333" />
@@ -55,7 +55,7 @@ export function ChartCard({ title, value, period, data, color = "#006FEE" }: Cha
             />
           </LineChart>
         </ResponsiveContainer>
-      </CardBody>
+      </Card.Content>
     </Card>
   );
 }

@@ -25,15 +25,17 @@ export function Header({ title, subtitle, showTutorial = false }: HeaderProps) {
       </div>
       <div className="flex items-center gap-2">
         <Button
-          variant="flat"
-          startContent={<Icon icon="lucide:search" />}
+          variant="tertiary"
+          onPress={() => {}}
         >
+          <Icon icon="lucide:search" slot="start" />
           Search
         </Button>
         <Button
-          color="primary"
-          startContent={<Icon icon="lucide:plus" />}
+          variant="primary"
+          onPress={() => {}}
         >
+          <Icon icon="lucide:plus" slot="start" />
           Add
         </Button>
       </div>

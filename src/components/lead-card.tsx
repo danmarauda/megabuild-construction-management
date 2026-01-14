@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardBody, Chip, Button } from "@heroui/react";
+import { Card, Chip, Button } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import { Lead } from "../types/project";
 import { format } from "date-fns";
@@ -22,15 +22,15 @@ export function LeadCard({ lead }: LeadCardProps) {
 
   return (
     <Card className="bg-gray-900 border border-gray-800">
-      <CardBody>
+      <Card.Content>
         <div className="flex justify-between items-start">
           <div>
             <h3 className="text-lg font-medium text-white">{lead.name}</h3>
             <Chip
               size="sm"
               color={status.color as any}
-              variant="flat"
-              startContent={<Icon icon={status.icon} width={14} height={14} />}
+              variant="tertiary"
+              slot="start"
               className="mt-2"
             >
               {lead.status}
@@ -84,11 +84,11 @@ export function LeadCard({ lead }: LeadCardProps) {
         </div>
 
         <div className="mt-4 flex gap-2 justify-end">
-          <Button variant="flat" size="sm">
+          <Button variant="tertiary" size="sm">
             <Icon icon="lucide:mail" className="mr-1" />
             Email
           </Button>
-          <Button variant="flat" size="sm">
+          <Button variant="tertiary" size="sm">
             <Icon icon="lucide:phone" className="mr-1" />
             Call
           </Button>
@@ -97,7 +97,7 @@ export function LeadCard({ lead }: LeadCardProps) {
             Next Step
           </Button>
         </div>
-      </CardBody>
+      </Card.Content>
     </Card>
   );
 }

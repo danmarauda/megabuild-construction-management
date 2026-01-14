@@ -1,6 +1,6 @@
 import React from "react";
 import { Header } from "../components/header";
-import { Card, CardBody, Input, Button, Textarea, Tabs, Tab } from "@heroui/react";
+import { Card, Input, Button, TextArea, Tabs, Tab } from "@heroui/react";
 import { Icon } from "@iconify/react";
 
 export default function Support() {
@@ -12,7 +12,7 @@ export default function Support() {
       
       <div className="p-6">
         <Card className="bg-gray-900 border border-gray-800 mb-6">
-          <CardBody>
+          <Card.Content>
             <Tabs 
               aria-label="Support options" 
               selectedKey={selected} 
@@ -24,13 +24,13 @@ export default function Support() {
               <Tab key="tickets" title="My Tickets" />
               <Tab key="knowledge" title="Knowledge Base" />
             </Tabs>
-          </CardBody>
+          </Card.Content>
         </Card>
         
         {selected === "contact" && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <Card className="bg-gray-900 border border-gray-800 lg:col-span-2">
-              <CardBody>
+              <Card.Content>
                 <h3 className="text-lg font-medium text-white mb-6">Submit a Support Request</h3>
                 
                 <div className="space-y-4">
@@ -67,7 +67,7 @@ export default function Support() {
                   </div>
                   
                   <div>
-                    <Textarea
+                    <TextArea
                       label="Message"
                       placeholder="Please describe your issue in detail"
                       variant="bordered"
@@ -92,12 +92,12 @@ export default function Support() {
                     </Button>
                   </div>
                 </div>
-              </CardBody>
+              </Card.Content>
             </Card>
             
             <div className="space-y-6">
               <Card className="bg-gray-900 border border-gray-800">
-                <CardBody>
+                <Card.Content>
                   <h3 className="text-lg font-medium text-white mb-4">Contact Information</h3>
                   
                   <div className="space-y-4">
@@ -131,11 +131,11 @@ export default function Support() {
                       </div>
                     </div>
                   </div>
-                </CardBody>
+                </Card.Content>
               </Card>
               
               <Card className="bg-gray-900 border border-gray-800">
-                <CardBody>
+                <Card.Content>
                   <h3 className="text-lg font-medium text-white mb-4">Support Level</h3>
                   
                   <div className="p-3 border border-primary-600 bg-primary-900/20 rounded-lg mb-4">
@@ -146,7 +146,7 @@ export default function Support() {
                   <div className="text-sm text-gray-400">
                     Average response time: <span className="text-green-500 font-medium">4 hours</span>
                   </div>
-                </CardBody>
+                </Card.Content>
               </Card>
             </div>
           </div>

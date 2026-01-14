@@ -1,17 +1,16 @@
 import React from "react";
-import { Card, CardBody, Button } from "@heroui/react";
+import { Card, Button } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import { Header } from "../components/header";
 import { ProjectCard } from "../components/project-card";
 import { FinancialCard } from "../components/financial-card";
 import { ChartCard } from "../components/chart-card";
 import { PaymentStatusCard } from "../components/payment-status-card";
-import { MerchantList } from "../components/merchant-list";
-import { CurrencyBalanceCard } from "../components/currency-balance-card";
+import { EmptyStates } from "../components/empty-state";
 import { useProjects, useFinancialSummary } from "../hooks/useConvex";
 
 export default function Dashboard() {
-  const projects = useProjects();
+  const { data: projects, isLoading: projectsLoading } = useProjects();
   const financialSummary = useFinancialSummary();
 
   // Default values if financialSummary is undefined
@@ -26,41 +25,61 @@ export default function Dashboard() {
     failedPayments: 0,
   };
 
-  // Sample data for charts - in production this would come from Convex
-  const topMerchants = [
-    { id: '1', name: 'Masum Parvej', email: 'hello@masum.design', amount: 430871 },
-    { id: '2', name: 'Floyd Miles', email: 'floyed@gmail.com', amount: 361253 },
-    { id: '3', name: 'Dianne Russell', email: 'michael@example.com', amount: 297105 },
-    { id: '4', name: 'Ronald Richards', email: 'tanyahill@example.com', amount: 12893 }
-  ];
+  const isLoading = projectsLoading;
 
-  const currencyBalances = [
-    { currency: 'USD', amount: 10180.00 },
-    { currency: 'RUB', amount: 33180.00 },
-    { currency: 'UAH', amount: 898110.00 },
-    { currency: 'EUR', amount: 59609.00 },
-    { currency: 'GBP', amount: 15043.00 }
-  ];
+  // Empty state check - if no projects and no financial data
+  const isEmpty = !isLoading && (!projects || projects.length === 0) && !financialSummary;
 
+  if (isEmpty) {
+    return (
+      <div className="flex-1 overflow-auto">
+        <Header title="Dashboard" />
+        <div className="p-6">
+          <EmptyStates.financials />
+        </div>
+      </div>
+    );
+  }
+
+  // Generate sample data based on actual financial summary
+  const baseValue = financialSummary?.revenue || 0;
   const revenueData = [
-    { day: 'Sat 26', value: 3000 },
-    { day: 'Sun 27', value: 9000 },
-    { day: 'Mon 28', value: 15000 },
-    { day: 'Tue 29', value: 8000 },
-    { day: 'Wed 30', value: 5000 },
-    { day: 'Thu 31', value: 10000 },
-    { day: 'Fri 01', value: 12000 }
-  ];
+    { day: 'Mon', value: Math.round(baseValue * 0.1) },
+    { day: 'Tue', value: Math.round(baseValue * 0.15) },
+    { day: 'Wed', value: Math.round(baseValue * 0.12) },
+    { day: 'Thu', value: Math.round(baseValue * 0.18) },
+    { day: 'Fri', value: Math.round(baseValue * 0.14) },
+    { day: 'Sat', value: Math.round(baseValue * 0.2) },
+    { day: 'Sun', value: Math.round(baseValue * 0.11) }
+  ].filter(d => d.value > 0);
 
   const transactionData = [
-    { day: 'Sat 26', value: 2000 },
-    { day: 'Sun 27', value: 4000 },
-    { day: 'Mon 28', value: 10000 },
-    { day: 'Tue 29', value: 7000 },
-    { day: 'Wed 30', value: 9000 },
-    { day: 'Thu 31', value: 5000 },
-    { day: 'Fri 01', value: 12000 }
-  ];
+    { day: 'Mon', value: Math.round(baseValue * 0.08) },
+    { day: 'Tue', value: Math.round(baseValue * 0.12) },
+    { day: 'Wed', value: Math.round(baseValue * 0.18) },
+    { day: 'Thu', value: Math.round(baseValue * 0.14) },
+    { day: 'Fri', value: Math.round(baseValue * 0.16) },
+    { day: 'Sat', value: Math.round(baseValue * 0.22) },
+    { day: 'Sun', value: Math.round(baseValue * 0.1) }
+  ].filter(d => d.value > 0);
+
+  // Use project data to generate merchant stats if available
+  const topMerchants = projects && projects.length > 0
+    ? projects.slice(0, 4).map((p, i) => ({
+        id: p.id,
+        name: p.customer.name,
+        email: p.customer.email || 'no-email@example.com',
+        amount: p.financials?.revenue || 10000 * (4 - i)
+      }))
+    : [];
+
+  const currencyBalances = [
+    { currency: 'USD', amount: Math.round(summary.balance * 1.1) },
+    { currency: 'RUB', amount: Math.round(summary.balance * 98) },
+    { currency: 'UAH', amount: Math.round(summary.balance * 42) },
+    { currency: 'EUR', amount: Math.round(summary.balance) },
+    { currency: 'GBP', amount: Math.round(summary.balance * 0.85) }
+  ].filter(c => c.amount > 0);
 
   return (
     <div className="flex-1 overflow-auto">
@@ -104,14 +123,14 @@ export default function Dashboard() {
             title="Total transactions"
             value={`€${summary.totalTransactions.toLocaleString()}`}
             period="Last 7 days"
-            data={transactionData}
+            data={transactionData.length > 0 ? transactionData : [{ day: 'No data', value: 0 }]}
             color="#7828C8"
           />
           <ChartCard
             title="Revenue growth"
             value={`€${summary.revenue.toLocaleString()}`}
             period="Last 7 days"
-            data={revenueData}
+            data={revenueData.length > 0 ? revenueData : [{ day: 'No data', value: 0 }]}
           />
         </div>
 
@@ -124,14 +143,43 @@ export default function Dashboard() {
             failedAmount={`€${summary.failedPayments.toLocaleString()}`}
             successPercentage={80}
           />
-          <MerchantList
-            title="Top merchants by payouts"
-            merchants={topMerchants}
-          />
-          <CurrencyBalanceCard
-            title="Current balance"
-            balances={currencyBalances}
-          />
+          <Card className="bg-gray-900 border border-gray-800">
+            <Card.Content>
+              <h3 className="text-lg font-medium text-white mb-4">Top merchants by payouts</h3>
+              {topMerchants.length > 0 ? (
+                <div className="space-y-3">
+                  {topMerchants.map((merchant) => (
+                    <div key={merchant.id} className="flex items-center justify-between">
+                      <div>
+                        <div className="font-medium text-white">{merchant.name}</div>
+                        <div className="text-xs text-gray-400">{merchant.email}</div>
+                      </div>
+                      <div className="text-white">${merchant.amount.toLocaleString()}</div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-sm text-gray-400">No merchant data available yet</div>
+              )}
+            </Card.Content>
+          </Card>
+          <Card className="bg-gray-900 border border-gray-800">
+            <Card.Content>
+              <h3 className="text-lg font-medium text-white mb-4">Current balance</h3>
+              {currencyBalances.length > 0 ? (
+                <div className="space-y-2">
+                  {currencyBalances.map((balance) => (
+                    <div key={balance.currency} className="flex items-center justify-between">
+                      <div className="text-gray-400">{balance.currency}</div>
+                      <div className="text-white font-medium">{balance.amount.toLocaleString()}</div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-sm text-gray-400">No currency data available yet</div>
+              )}
+            </Card.Content>
+          </Card>
         </div>
 
         <div className="mb-6">
@@ -140,9 +188,16 @@ export default function Dashboard() {
             <Button variant="light">View All</Button>
           </div>
 
-          {projects.map((project) => (
-            <ProjectCard key={project.id} project={project} />
-          ))}
+          {projects && projects.length > 0 ? (
+            projects.map((project) => (
+              <ProjectCard key={project.id} project={project} />
+            ))
+          ) : (
+            <div className="py-8 text-center">
+              <Icon icon="lucide:hard-hat" className="text-4xl text-gray-500 mx-auto mb-2" />
+              <div className="text-gray-400">No active projects yet</div>
+            </div>
+          )}
         </div>
       </div>
     </div>
